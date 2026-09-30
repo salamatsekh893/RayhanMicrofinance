@@ -1,0 +1,13 @@
+## .NET Ignore
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+.idea/
+*.db
+*.db-shm
+*.db-wal
+appsettings.Production.json

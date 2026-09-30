@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RayhanMicrofinance.Application/RayhanMicrofinance.Application.csproj" />
+    <Project Path="src/RayhanMicrofinance.Domain/RayhanMicrofinance.Domain.csproj" />
+    <Project Path="src/RayhanMicrofinance.Infrastructure/RayhanMicrofinance.Infrastructure.csproj" />
+    <Project Path="src/RayhanMicrofinance.Web/RayhanMicrofinance.Web.csproj" />
+  </Folder>
+</Solution>
