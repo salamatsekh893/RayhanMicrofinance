@@ -17,6 +17,7 @@ public class LoginResponseDto
     public string RoleName => Role.ToString();
     public int? BranchId { get; set; }
     public string? BranchName { get; set; }
+    public int? EmployeeId { get; set; }
     public string AccessToken { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
@@ -39,6 +40,7 @@ public class UserDto
     public string RoleName => Role.ToString();
     public int? BranchId { get; set; }
     public string? BranchName { get; set; }
+    public int? EmployeeId { get; set; }
     public bool IsActive { get; set; }
     public DateTime? LastLoginAt { get; set; }
 }

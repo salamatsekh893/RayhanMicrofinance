@@ -30,7 +30,7 @@ public class CustomersController : ControllerBase
         [FromQuery] int pageIndex = 1,
         [FromQuery] int pageSize = 15)
     {
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
         }
@@ -43,6 +43,13 @@ public class CustomersController : ControllerBase
             .AsQueryable();
 
         if (branchId.HasValue) query = query.Where(c => c.BranchId == branchId.Value);
+
+        // Strict Field Officer portfolio isolation
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            query = query.Where(c => c.Center != null && c.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
+
         if (centerId.HasValue) query = query.Where(c => c.CenterId == centerId.Value);
         if (groupId.HasValue) query = query.Where(c => c.GroupId == groupId.Value);
 
@@ -95,6 +102,11 @@ public class CustomersController : ControllerBase
                 IsKycVerified = c.IsKycVerified,
                 PhotoUrl = c.PhotoUrl,
                 SignatureUrl = c.SignatureUrl,
+                KycDocumentFrontUrl = c.KycDocumentFrontUrl,
+                KycDocumentBackUrl = c.KycDocumentBackUrl,
+                BankAccountNumber = c.BankAccountNumber,
+                BankName = c.BankName,
+                IfscCode = c.IfscCode,
                 Latitude = c.Latitude,
                 Longitude = c.Longitude,
                 NomineeName = c.NomineeName,
@@ -129,6 +141,16 @@ public class CustomersController : ControllerBase
 
         if (c == null) return NotFound(ApiResponse<CustomerDto>.Fail("Customer not found"));
 
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue && c.BranchId != _currentUser.BranchId.Value)
+        {
+            return Forbid();
+        }
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue && c.Center != null && c.Center.FieldOfficerId.HasValue && c.Center.FieldOfficerId.Value != _currentUser.EmployeeId.Value)
+        {
+            return Forbid();
+        }
+
         var dto = new CustomerDto
         {
             Id = c.Id,
@@ -162,6 +184,11 @@ public class CustomersController : ControllerBase
             IsKycVerified = c.IsKycVerified,
             PhotoUrl = c.PhotoUrl,
             SignatureUrl = c.SignatureUrl,
+            KycDocumentFrontUrl = c.KycDocumentFrontUrl,
+            KycDocumentBackUrl = c.KycDocumentBackUrl,
+            BankAccountNumber = c.BankAccountNumber,
+            BankName = c.BankName,
+            IfscCode = c.IfscCode,
             Latitude = c.Latitude,
             Longitude = c.Longitude,
             NomineeName = c.NomineeName,
@@ -185,9 +212,19 @@ public class CustomersController : ControllerBase
         }
 
         var branchId = req.BranchId;
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
+        }
+
+        // Validate Field Officer center assignment
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue && req.CenterId.HasValue)
+        {
+            var center = await _db.Centers.FindAsync(req.CenterId.Value);
+            if (center != null && center.FieldOfficerId.HasValue && center.FieldOfficerId.Value != _currentUser.EmployeeId.Value)
+            {
+                return BadRequest(ApiResponse<CustomerDto>.Fail("You can only enroll members into your own assigned centers."));
+            }
         }
 
         // Generate Customer Code
@@ -242,7 +279,7 @@ public class CustomersController : ControllerBase
             BankAccountNumber = req.BankAccountNumber?.Trim(),
             BankName = req.BankName?.Trim(),
             IfscCode = req.IfscCode?.Trim(),
-            IsKycVerified = true
+            IsKycVerified = false // By default newly registered customer has pending KYC until documents are uploaded and verified
         };
 
         _db.Customers.Add(customer);
@@ -256,19 +293,158 @@ public class CustomersController : ControllerBase
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
                 Phone = customer.Phone,
-                BranchId = customer.BranchId
-            }, "Customer registered successfully."));
+                BranchId = customer.BranchId,
+                IsKycVerified = false
+            }, "Customer registered successfully with KYC PENDING. Please upload verification documents."));
+    }
+
+    [HttpPost("{id}/upload-document")]
+    public async Task<ActionResult<ApiResponse<CustomerDto>>> UploadDocument(int id, [FromBody] UploadDocumentRequest req)
+    {
+        var cust = await _db.Customers
+            .Include(c => c.Branch)
+            .Include(c => c.Center)
+            .Include(c => c.Group)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (cust == null) return NotFound(ApiResponse<CustomerDto>.Fail("Customer not found"));
+
+        string? savedUrl = null;
+        if (!string.IsNullOrWhiteSpace(req.Base64Data))
+        {
+            try
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "kyc", id.ToString());
+                Directory.CreateDirectory(uploadsFolder);
+
+                var ext = ".jpg";
+                var base64Clean = req.Base64Data;
+                if (req.Base64Data.Contains(","))
+                {
+                    var parts = req.Base64Data.Split(',');
+                    base64Clean = parts[1];
+                    if (parts[0].Contains("png")) ext = ".png";
+                    else if (parts[0].Contains("pdf")) ext = ".pdf";
+                    else if (parts[0].Contains("jpeg") || parts[0].Contains("jpg")) ext = ".jpg";
+                }
+
+                var fileName = $"{req.DocumentType.ToLower()}_{DateTime.UtcNow.Ticks}{ext}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+                var bytes = Convert.FromBase64String(base64Clean);
+                await System.IO.File.WriteAllBytesAsync(filePath, bytes);
+                savedUrl = $"/uploads/kyc/{id}/{fileName}";
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponse<CustomerDto>.Fail($"Failed to process document file: {ex.Message}"));
+            }
+        }
+
+        switch (req.DocumentType?.ToLower())
+        {
+            case "aadhaar_front":
+                if (savedUrl != null) cust.KycDocumentFrontUrl = savedUrl;
+                if (!string.IsNullOrWhiteSpace(req.DocumentNumber)) cust.AadhaarNumber = req.DocumentNumber.Trim();
+                break;
+            case "aadhaar_back":
+                if (savedUrl != null) cust.KycDocumentBackUrl = savedUrl;
+                break;
+            case "pan":
+                if (!string.IsNullOrWhiteSpace(req.DocumentNumber)) cust.PanNumber = req.DocumentNumber.Trim();
+                break;
+            case "voter":
+                if (!string.IsNullOrWhiteSpace(req.DocumentNumber)) cust.VoterIdNumber = req.DocumentNumber.Trim();
+                break;
+            case "photo":
+                if (savedUrl != null) cust.PhotoUrl = savedUrl;
+                break;
+            case "signature":
+                if (savedUrl != null) cust.SignatureUrl = savedUrl;
+                break;
+            case "passbook":
+                if (!string.IsNullOrWhiteSpace(req.DocumentNumber)) cust.BankAccountNumber = req.DocumentNumber.Trim();
+                break;
+        }
+
+        await _db.SaveChangesAsync();
+
+        var dto = new CustomerDto
+        {
+            Id = cust.Id,
+            CustomerCode = cust.CustomerCode,
+            BranchId = cust.BranchId,
+            BranchName = cust.Branch?.BranchName,
+            CenterId = cust.CenterId,
+            CenterName = cust.Center?.CenterName,
+            GroupId = cust.GroupId,
+            GroupName = cust.Group?.GroupName,
+            FirstName = cust.FirstName,
+            LastName = cust.LastName,
+            GuardianName = cust.GuardianName,
+            RelationWithGuardian = cust.RelationWithGuardian,
+            Gender = cust.Gender,
+            DateOfBirth = cust.DateOfBirth,
+            MaritalStatus = cust.MaritalStatus,
+            Phone = cust.Phone,
+            Email = cust.Email,
+            Address = cust.Address,
+            City = cust.City,
+            State = cust.State,
+            Pincode = cust.Pincode,
+            Occupation = cust.Occupation,
+            MonthlyIncome = cust.MonthlyIncome,
+            PrimaryKycType = cust.PrimaryKycType,
+            AadhaarNumber = cust.AadhaarNumber,
+            PanNumber = cust.PanNumber,
+            VoterIdNumber = cust.VoterIdNumber,
+            IsKycVerified = cust.IsKycVerified,
+            PhotoUrl = cust.PhotoUrl,
+            SignatureUrl = cust.SignatureUrl,
+            KycDocumentFrontUrl = cust.KycDocumentFrontUrl,
+            KycDocumentBackUrl = cust.KycDocumentBackUrl,
+            BankAccountNumber = cust.BankAccountNumber,
+            BankName = cust.BankName,
+            IfscCode = cust.IfscCode,
+            IsBlacklisted = cust.IsBlacklisted,
+            CreatedAt = cust.CreatedAt
+        };
+
+        return Ok(ApiResponse<CustomerDto>.Ok(dto, "KYC Document uploaded and attached to member record."));
     }
 
     [HttpPost("{id}/verify-kyc")]
-    public async Task<ActionResult<ApiResponse<bool>>> VerifyKyc(int id)
+    public async Task<ActionResult<ApiResponse<CustomerDto>>> VerifyKyc(int id, [FromQuery] bool isVerified = true)
     {
-        var cust = await _db.Customers.FindAsync(id);
-        if (cust == null) return NotFound(ApiResponse<bool>.Fail("Customer not found"));
+        var cust = await _db.Customers
+            .Include(c => c.Branch)
+            .Include(c => c.Center)
+            .Include(c => c.Group)
+            .FirstOrDefaultAsync(c => c.Id == id);
 
-        cust.IsKycVerified = true;
+        if (cust == null) return NotFound(ApiResponse<CustomerDto>.Fail("Customer not found"));
+
+        cust.IsKycVerified = isVerified;
         await _db.SaveChangesAsync();
 
-        return Ok(ApiResponse<bool>.Ok(true, "KYC verified successfully"));
+        var dto = new CustomerDto
+        {
+            Id = cust.Id,
+            CustomerCode = cust.CustomerCode,
+            FirstName = cust.FirstName,
+            LastName = cust.LastName,
+            AadhaarNumber = cust.AadhaarNumber,
+            IsKycVerified = cust.IsKycVerified
+        };
+
+        var msg = isVerified ? "Member KYC has been verified and approved." : "Member KYC set to PENDING.";
+        return Ok(ApiResponse<CustomerDto>.Ok(dto, msg));
     }
+}
+
+public class UploadDocumentRequest
+{
+    public string DocumentType { get; set; } = string.Empty;
+    public string? DocumentNumber { get; set; }
+    public string? Base64Data { get; set; }
+    public string? FileName { get; set; }
 }

@@ -25,7 +25,7 @@ public class CentersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<CenterDto>>>> GetCenters([FromQuery] int? branchId)
     {
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
         }
@@ -39,6 +39,11 @@ public class CentersController : ControllerBase
             .AsQueryable();
 
         if (branchId.HasValue) query = query.Where(c => c.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            query = query.Where(c => c.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
 
         var list = await query
             .Select(c => new CenterDto
@@ -66,9 +71,15 @@ public class CentersController : ControllerBase
     public async Task<ActionResult<ApiResponse<CenterDto>>> CreateCenter([FromBody] CreateCenterDto req)
     {
         var branchId = req.BranchId;
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
+        }
+
+        var fieldOfficerId = req.FieldOfficerId;
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            fieldOfficerId = _currentUser.EmployeeId.Value;
         }
 
         var count = await _db.Centers.CountAsync(c => c.BranchId == branchId);
@@ -77,7 +88,7 @@ public class CentersController : ControllerBase
             CenterCode = $"CTR-{branchId:D2}-{(count + 1):D3}",
             CenterName = req.CenterName.Trim(),
             BranchId = branchId,
-            FieldOfficerId = req.FieldOfficerId,
+            FieldOfficerId = fieldOfficerId,
             MeetingDay = req.MeetingDay,
             MeetingTime = TimeSpan.TryParse(req.MeetingTime, out var t) ? t : new TimeSpan(10, 0, 0),
             MeetingPlace = req.MeetingPlace.Trim(),
@@ -101,7 +112,7 @@ public class CentersController : ControllerBase
     [HttpGet("groups")]
     public async Task<ActionResult<ApiResponse<List<GroupDto>>>> GetGroups([FromQuery] int? centerId, [FromQuery] int? branchId)
     {
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
         }
@@ -116,6 +127,11 @@ public class CentersController : ControllerBase
 
         if (branchId.HasValue) query = query.Where(g => g.BranchId == branchId.Value);
         if (centerId.HasValue) query = query.Where(g => g.CenterId == centerId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            query = query.Where(g => g.Center != null && g.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
 
         var list = await query
             .Select(g => new GroupDto

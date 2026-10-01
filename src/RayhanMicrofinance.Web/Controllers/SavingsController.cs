@@ -50,13 +50,14 @@ public class SavingsController : ControllerBase
     [HttpGet("accounts")]
     public async Task<ActionResult<ApiResponse<List<SavingsAccountDto>>>> GetAccounts([FromQuery] int? customerId, [FromQuery] int? branchId)
     {
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
         }
 
         var query = _db.SavingsAccounts
             .Include(s => s.Customer)
+                .ThenInclude(c => c!.Center)
             .Include(s => s.Branch)
             .Include(s => s.SavingsScheme)
             .AsNoTracking()
@@ -64,6 +65,11 @@ public class SavingsController : ControllerBase
 
         if (customerId.HasValue) query = query.Where(s => s.CustomerId == customerId.Value);
         if (branchId.HasValue) query = query.Where(s => s.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            query = query.Where(s => s.Customer != null && s.Customer.Center != null && s.Customer.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
 
         var list = await query
             .Select(s => new SavingsAccountDto

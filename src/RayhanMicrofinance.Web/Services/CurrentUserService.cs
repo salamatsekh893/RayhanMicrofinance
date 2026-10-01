@@ -44,6 +44,18 @@ public class CurrentUserService : ICurrentUserService
         }
     }
 
+    public int? EmployeeId
+    {
+        get
+        {
+            var empClaim = _httpContextAccessor.HttpContext?.User.FindFirst("EmployeeId")?.Value;
+            return int.TryParse(empClaim, out var id) ? id : null;
+        }
+    }
+
     public bool IsSuperAdmin => Role == UserRole.SuperAdmin;
+    public bool IsAdminOrSuperAdmin => Role == UserRole.SuperAdmin || Role == UserRole.Admin;
+    public bool IsBranchManager => Role == UserRole.BranchManager;
+    public bool IsFieldOfficer => Role == UserRole.FieldOfficer;
     public bool IsAuthenticated => _httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
 }

@@ -3,75 +3,89 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RPS Rayhan Tech - Microfinance ERP</title>
-    <!-- Tailwind CSS -->
+    <title>RPS RAYHAN TECH - MICROFINANCE ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#16a34a',
-                            600: '#15803d',
-                            700: '#166534',
-                            800: '#14532d',
-                            900: '#052e16'
-                        },
-                        navy: {
-                            800: '#1e293b',
-                            900: '#0f172a'
-                        }
+                        brand: { 50:'#ecfdf5',100:'#d1fae5',200:'#a7f3d0',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b' },
+                        corporate: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' }
                     }
                 }
             }
         }
     </script>
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Chart.js -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #dce7f3; }
+
+        /* ─── SIDEBAR (OFF-CANVAS DRAWER AS IN SCREENSHOT) ─────── */
+        #sidebar {
+            background: #ffffff;
+            box-shadow: 10px 0 40px rgba(15, 23, 42, 0.2);
         }
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+
+        .sidebar-menu-card {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 11px 14px; border-radius: 16px;
+            font-size: 11.5px; font-weight: 900; letter-spacing: 0.04em;
+            text-transform: uppercase; cursor: pointer; text-decoration: none;
+            border-width: 2px; border-style: solid;
+            transition: all 0.18s ease; margin-bottom: 7px;
         }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+        .sidebar-menu-card:hover {
+            transform: translateX(4px); box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+        .sidebar-menu-card.active {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+            filter: brightness(0.96);
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+
+        /* ─── VIBRANT PASTEL STAT CARDS (EXACTLY AS SCREENSHOT) ─── */
+        .card-sky    { background: #e0f2fe; border: 2px solid #38bdf8; color: #0369a1; border-radius: 18px; padding: 14px 16px; }
+        .card-yellow { background: #fef08a; border: 2px solid #eab308; color: #713f12; border-radius: 18px; padding: 14px 16px; }
+        .card-green  { background: #bbf7d0; border: 2px solid #22c55e; color: #14532d; border-radius: 18px; padding: 14px 16px; }
+        .card-blue   { background: #bfdbfe; border: 2px solid #3b82f6; color: #1e3a8a; border-radius: 18px; padding: 14px 16px; }
+        .card-purple { background: #e9d5ff; border: 2px solid #a855f7; color: #581c87; border-radius: 18px; padding: 14px 16px; }
+        .card-orange { background: #fed7aa; border: 2px solid #f97316; color: #7c2d12; border-radius: 18px; padding: 14px 16px; }
+        .card-rose   { background: #fecdd3; border: 2px solid #f43f5e; color: #881337; border-radius: 18px; padding: 14px 16px; }
+        .card-pink   { background: #fbcfe8; border: 2px solid #ec4899; color: #831843; border-radius: 18px; padding: 14px 16px; }
+
+        /* ─── TABLES (DARK NAVY HEADERS AS IN SCREENSHOT 3) ──── */
+        .erp-table thead tr { background: #0f2d59; color: #ffffff; }
+        .erp-table th { padding: 12px 14px; font-size: 11px; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; color: #ffffff; }
+        .erp-table td { padding: 11px 14px; font-size: 12px; font-weight: 600; color: #1e293b; border-bottom: 1px solid #e2e8f0; }
+        .erp-table tbody tr { background: #ffffff; transition: background 0.15s; }
+        .erp-table tbody tr:hover td { background: #f0f7ff; }
+
+        /* ─── BADGES ──────────────────────── */
+        .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; }
+
+        /* ─── SCROLLBAR ───────────────────── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
+
+        /* ─── ANIMATION ───────────────────── */
+        @@keyframes fadeSlideIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .tab-view:not(.hidden) { animation: fadeSlideIn 0.2s ease; }
+
         @@media print {
-            .no-print {
-                display: none !important;
-            }
-            .print-only {
-                display: block !important;
-            }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+<body class="text-slate-800 antialiased selection:bg-emerald-600 selection:text-white">
     @RenderBody()
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

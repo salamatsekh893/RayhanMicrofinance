@@ -51,7 +51,7 @@ public class AuthController : ControllerBase
         }
 
         // Generate tokens
-        var token = _jwtService.GenerateAccessToken(user.Id, user.Username, user.Role, user.BranchId);
+        var token = _jwtService.GenerateAccessToken(user.Id, user.Username, user.Role, user.BranchId, user.EmployeeId);
         var refreshToken = _jwtService.GenerateRefreshToken();
 
         user.LastLoginAt = DateTime.UtcNow;
@@ -73,6 +73,7 @@ public class AuthController : ControllerBase
             Role = user.Role,
             BranchId = user.BranchId,
             BranchName = user.Branch?.BranchName,
+            EmployeeId = user.EmployeeId,
             AccessToken = token,
             RefreshToken = refreshToken,
             ExpiresAt = DateTime.UtcNow.AddDays(1)
@@ -108,6 +109,7 @@ public class AuthController : ControllerBase
             Role = user.Role,
             BranchId = user.BranchId,
             BranchName = user.Branch?.BranchName,
+            EmployeeId = user.EmployeeId,
             IsActive = user.IsActive,
             LastLoginAt = user.LastLoginAt
         };

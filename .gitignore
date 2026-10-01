@@ -10,4 +10,6 @@
 *.db
 *.db-shm
 *.db-wal
-appsettings.Production.json
+RayhanMicrofinance_deploy.zip
+publish_output/
+scratch/

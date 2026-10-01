@@ -42,6 +42,11 @@ public class CustomerDto
 
     public string? PhotoUrl { get; set; }
     public string? SignatureUrl { get; set; }
+    public string? KycDocumentFrontUrl { get; set; }
+    public string? KycDocumentBackUrl { get; set; }
+    public string? BankAccountNumber { get; set; }
+    public string? BankName { get; set; }
+    public string? IfscCode { get; set; }
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
 

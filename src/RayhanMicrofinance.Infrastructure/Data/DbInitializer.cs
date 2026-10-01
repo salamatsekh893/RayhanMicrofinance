@@ -206,7 +206,71 @@ public static class DbInitializer
             context.Designations.AddRange(desigBm, desigFo, desigAcc);
             await context.SaveChangesAsync();
 
-            // 7. Users
+            // 6.5 Staff / Employees
+            var empManager1 = new Employee
+            {
+                EmployeeCode = "EMP-01-001",
+                FirstName = "Md.",
+                LastName = "Rayhan",
+                BranchId = hoBranch.Id,
+                DepartmentId = opDept.Id,
+                DesignationId = desigBm.Id,
+                Role = UserRole.BranchManager,
+                JoiningDate = DateTime.UtcNow.AddYears(-2),
+                BasicSalary = 45000,
+                Email = "manager@rayhantech.com",
+                Phone = "+91 98765 00002"
+            };
+
+            var empFo1 = new Employee
+            {
+                EmployeeCode = "EMP-01-002",
+                FirstName = "Rahul",
+                LastName = "Sen",
+                BranchId = hoBranch.Id,
+                DepartmentId = opDept.Id,
+                DesignationId = desigFo.Id,
+                Role = UserRole.FieldOfficer,
+                JoiningDate = DateTime.UtcNow.AddYears(-1),
+                BasicSalary = 22000,
+                Email = "rahul@rayhantech.com",
+                Phone = "+91 98765 00003"
+            };
+
+            var empManager2 = new Employee
+            {
+                EmployeeCode = "EMP-02-001",
+                FirstName = "Sourav",
+                LastName = "Das",
+                BranchId = barasatBranch.Id,
+                DepartmentId = opDept.Id,
+                DesignationId = desigBm.Id,
+                Role = UserRole.BranchManager,
+                JoiningDate = DateTime.UtcNow.AddYears(-2),
+                BasicSalary = 40000,
+                Email = "sourav@rayhantech.com",
+                Phone = "+91 98765 00004"
+            };
+
+            var empFo2 = new Employee
+            {
+                EmployeeCode = "EMP-02-002",
+                FirstName = "Bikash",
+                LastName = "Ghosh",
+                BranchId = barasatBranch.Id,
+                DepartmentId = opDept.Id,
+                DesignationId = desigFo.Id,
+                Role = UserRole.FieldOfficer,
+                JoiningDate = DateTime.UtcNow.AddMonths(-8),
+                BasicSalary = 20000,
+                Email = "bikash@rayhantech.com",
+                Phone = "+91 98765 00005"
+            };
+
+            context.Employees.AddRange(empManager1, empFo1, empManager2, empFo2);
+            await context.SaveChangesAsync();
+
+            // 7. Users with RBAC and Employee Linkages
             var users = new List<User>
             {
                 new()
@@ -229,17 +293,43 @@ public static class DbInitializer
                     Phone = "+91 98765 00002",
                     Role = UserRole.BranchManager,
                     BranchId = hoBranch.Id,
+                    EmployeeId = empManager1.Id,
+                    IsActive = true
+                },
+                new()
+                {
+                    Username = "manager_barasat",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Manager123!"),
+                    FullName = "Sourav Das (Barasat Manager)",
+                    Email = "sourav@rayhantech.com",
+                    Phone = "+91 98765 00004",
+                    Role = UserRole.BranchManager,
+                    BranchId = barasatBranch.Id,
+                    EmployeeId = empManager2.Id,
                     IsActive = true
                 },
                 new()
                 {
                     Username = "fieldofficer",
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword("Field123!"),
-                    FullName = "Rahul Sen (Field Officer)",
+                    FullName = "Rahul Sen (Field Officer - HO)",
                     Email = "rahul@rayhantech.com",
                     Phone = "+91 98765 00003",
                     Role = UserRole.FieldOfficer,
                     BranchId = hoBranch.Id,
+                    EmployeeId = empFo1.Id,
+                    IsActive = true
+                },
+                new()
+                {
+                    Username = "fieldofficer2",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("Field123!"),
+                    FullName = "Bikash Ghosh (Field Officer - Barasat)",
+                    Email = "bikash@rayhantech.com",
+                    Phone = "+91 98765 00005",
+                    Role = UserRole.FieldOfficer,
+                    BranchId = barasatBranch.Id,
+                    EmployeeId = empFo2.Id,
                     IsActive = true
                 }
             };
@@ -250,6 +340,7 @@ public static class DbInitializer
             var center1 = new Center
             {
                 BranchId = hoBranch.Id,
+                FieldOfficerId = empFo1.Id,
                 CenterCode = "CTR-101",
                 CenterName = "Bidhannagar Mahila Center",
                 MeetingDay = DayOfWeekEnum.Monday,
@@ -259,7 +350,21 @@ public static class DbInitializer
                 Latitude = 22.5800,
                 Longitude = 88.4200
             };
-            context.Centers.Add(center1);
+
+            var center2 = new Center
+            {
+                BranchId = barasatBranch.Id,
+                FieldOfficerId = empFo2.Id,
+                CenterCode = "CTR-201",
+                CenterName = "Barasat Nabapally Center",
+                MeetingDay = DayOfWeekEnum.Wednesday,
+                MeetingTime = new TimeSpan(11, 0, 0),
+                MeetingPlace = "Panchayat Office Hall",
+                VillageOrTown = "Barasat",
+                Latitude = 22.7200,
+                Longitude = 88.4800
+            };
+            context.Centers.AddRange(center1, center2);
             await context.SaveChangesAsync();
 
             var group1 = new LoanGroup
@@ -271,13 +376,23 @@ public static class DbInitializer
                 Status = GroupStatus.Active,
                 FormedDate = DateTime.UtcNow.AddMonths(-3)
             };
-            context.LoanGroups.Add(group1);
+
+            var group2 = new LoanGroup
+            {
+                BranchId = barasatBranch.Id,
+                CenterId = center2.Id,
+                GroupCode = "GRP-201-A",
+                GroupName = "Saraswati Mahila Group",
+                Status = GroupStatus.Active,
+                FormedDate = DateTime.UtcNow.AddMonths(-2)
+            };
+            context.LoanGroups.AddRange(group1, group2);
             await context.SaveChangesAsync();
 
-            // 9. Sample Customers
+            // 9. Sample Customers (HO & Barasat)
             var cust1 = new Customer
             {
-                CustomerCode = "CUST-2026-0001",
+                CustomerCode = "CUST-HO-260001",
                 BranchId = hoBranch.Id,
                 CenterId = center1.Id,
                 GroupId = group1.Id,
@@ -308,7 +423,7 @@ public static class DbInitializer
 
             var cust2 = new Customer
             {
-                CustomerCode = "CUST-2026-0002",
+                CustomerCode = "CUST-HO-260002",
                 BranchId = hoBranch.Id,
                 CenterId = center1.Id,
                 GroupId = group1.Id,
@@ -328,7 +443,7 @@ public static class DbInitializer
                 MonthlyIncome = 16000,
                 AadhaarNumber = "7823 4455 9012",
                 VoterIdNumber = "WB/01/123/456790",
-                IsKycVerified = true,
+                IsKycVerified = false,
                 NomineeName = "Mustafa Mondal",
                 NomineeRelation = "Spouse",
                 NomineePhone = "9831122337",
@@ -336,18 +451,51 @@ public static class DbInitializer
                 Longitude = 88.4215
             };
 
-            context.Customers.AddRange(cust1, cust2);
-            await context.SaveChangesAsync();
-
-            // Set group leader
-            group1.GroupLeaderId = cust1.Id;
-            await context.SaveChangesAsync();
-
-            // 10. Sample Loan Application with EMI Schedule
-            var loanScheme = schemes.First();
-            var loan = new LoanApplication
+            var cust3 = new Customer
             {
-                LoanAccountNumber = "LN-2026-0001",
+                CustomerCode = "CUST-BR-260001",
+                BranchId = barasatBranch.Id,
+                CenterId = center2.Id,
+                GroupId = group2.Id,
+                FirstName = "Anjali",
+                LastName = "Mondal",
+                GuardianName = "Tapas Mondal",
+                RelationWithGuardian = "Spouse",
+                Gender = Gender.Female,
+                DateOfBirth = new DateTime(1994, 3, 10),
+                MaritalStatus = MaritalStatus.Married,
+                Phone = "9831122338",
+                Address = "Vill-Nabapally, PO-Barasat",
+                City = "Barasat",
+                State = "West Bengal",
+                Pincode = "700124",
+                Occupation = "Handicrafts & Jute Bags",
+                MonthlyIncome = 17000,
+                AadhaarNumber = "9988 7766 5544",
+                VoterIdNumber = "WB/02/456/789012",
+                IsKycVerified = true,
+                NomineeName = "Tapas Mondal",
+                NomineeRelation = "Spouse",
+                NomineePhone = "9831122339",
+                Latitude = 22.7210,
+                Longitude = 88.4815
+            };
+
+            context.Customers.AddRange(cust1, cust2, cust3);
+            await context.SaveChangesAsync();
+
+            // Set group leaders
+            group1.GroupLeaderId = cust1.Id;
+            group2.GroupLeaderId = cust3.Id;
+            await context.SaveChangesAsync();
+
+            // 10. Sample Loan Applications with EMI Schedules
+            var loanScheme = schemes.First();
+
+            // Loan 1 (Kolkata HO)
+            var loan1 = new LoanApplication
+            {
+                LoanAccountNumber = "LN-2026-00001",
                 CustomerId = cust1.Id,
                 BranchId = hoBranch.Id,
                 CenterId = center1.Id,
@@ -380,27 +528,65 @@ public static class DbInitializer
                 MaturityDate = DateTime.UtcNow.AddMonths(10),
                 PurposeOfLoan = "Purchase of sewing machines and textile fabrics"
             };
-            context.LoanApplications.Add(loan);
+
+            // Loan 2 (Barasat Branch)
+            var loan2 = new LoanApplication
+            {
+                LoanAccountNumber = "LN-2026-00002",
+                CustomerId = cust3.Id,
+                BranchId = barasatBranch.Id,
+                CenterId = center2.Id,
+                GroupId = group2.Id,
+                LoanSchemeId = loanScheme.Id,
+                LoanType = LoanType.GroupLoan,
+                RequestedAmount = 25000,
+                ApprovedAmount = 25000,
+                DisbursedAmount = 25000,
+                InterestRatePerAnnum = 18.0m,
+                CalculationMethod = InterestCalculationMethod.Flat,
+                Frequency = RepaymentFrequency.Weekly,
+                TenureInMonths = 12,
+                TotalInstallments = 52,
+                TotalInterest = 4500,
+                TotalPayable = 29500,
+                TotalPaid = 2835, // 5 installments paid
+                OutstandingPrincipal = 22596,
+                OutstandingInterest = 4069,
+                ProcessingFee = 250,
+                InsuranceFee = 250,
+                Status = LoanStatus.Active,
+                ApplicationDate = DateTime.UtcNow.AddMonths(-1),
+                ApprovedDate = DateTime.UtcNow.AddMonths(-1),
+                ApprovedBy = "manager_barasat",
+                DisbursedDate = DateTime.UtcNow.AddMonths(-1),
+                DisbursedBy = "manager_barasat",
+                DisbursementMode = PaymentMode.Cash,
+                FirstEmiDate = DateTime.UtcNow.AddMonths(-1).AddDays(7),
+                MaturityDate = DateTime.UtcNow.AddMonths(11),
+                PurposeOfLoan = "Jute craft machinery and raw materials"
+            };
+
+            context.LoanApplications.AddRange(loan1, loan2);
             await context.SaveChangesAsync();
 
-            // Create EMI Schedule
-            decimal weeklyPrincipal = Math.Round(30000m / 52m, 2);
-            decimal weeklyInterest = Math.Round(5400m / 52m, 2);
-            var startDate = loan.DisbursedDate!.Value;
+            // Create EMI Schedule for Loan 1
+            decimal weeklyPrincipal1 = Math.Round(30000m / 52m, 2);
+            decimal weeklyInterest1 = Math.Round(5400m / 52m, 2);
+            var startDate1 = loan1.DisbursedDate!.Value;
 
             for (int i = 1; i <= 52; i++)
             {
-                var dueDate = startDate.AddDays(i * 7);
+                var dueDate = startDate1.AddDays(i * 7);
                 var isPaid = i <= 8;
                 var emi = new LoanEmiSchedule
                 {
-                    LoanApplicationId = loan.Id,
+                    LoanApplicationId = loan1.Id,
                     InstallmentNumber = i,
                     DueDate = dueDate,
-                    PrincipalAmount = weeklyPrincipal,
-                    InterestAmount = weeklyInterest,
-                    PaidPrincipal = isPaid ? weeklyPrincipal : 0,
-                    PaidInterest = isPaid ? weeklyInterest : 0,
+                    PrincipalAmount = weeklyPrincipal1,
+                    InterestAmount = weeklyInterest1,
+                    PaidPrincipal = isPaid ? weeklyPrincipal1 : 0,
+                    PaidInterest = isPaid ? weeklyInterest1 : 0,
                     PaidPenalty = 0,
                     Status = isPaid ? EmiStatus.Paid : (dueDate < DateTime.UtcNow ? EmiStatus.Overdue : EmiStatus.Pending),
                     PaidDate = isPaid ? dueDate : null,
@@ -408,10 +594,36 @@ public static class DbInitializer
                 };
                 context.LoanEmiSchedules.Add(emi);
             }
+
+            // Create EMI Schedule for Loan 2
+            decimal weeklyPrincipal2 = Math.Round(25000m / 52m, 2);
+            decimal weeklyInterest2 = Math.Round(4500m / 52m, 2);
+            var startDate2 = loan2.DisbursedDate!.Value;
+
+            for (int i = 1; i <= 52; i++)
+            {
+                var dueDate = startDate2.AddDays(i * 7);
+                var isPaid = i <= 5;
+                var emi = new LoanEmiSchedule
+                {
+                    LoanApplicationId = loan2.Id,
+                    InstallmentNumber = i,
+                    DueDate = dueDate,
+                    PrincipalAmount = weeklyPrincipal2,
+                    InterestAmount = weeklyInterest2,
+                    PaidPrincipal = isPaid ? weeklyPrincipal2 : 0,
+                    PaidInterest = isPaid ? weeklyInterest2 : 0,
+                    PaidPenalty = 0,
+                    Status = isPaid ? EmiStatus.Paid : (dueDate < DateTime.UtcNow ? EmiStatus.Overdue : EmiStatus.Pending),
+                    PaidDate = isPaid ? dueDate : null,
+                    PaymentReference = isPaid ? $"REC-BR-PAY-{i:D4}" : null
+                };
+                context.LoanEmiSchedules.Add(emi);
+            }
             await context.SaveChangesAsync();
 
-            // 11. Sample Savings Account
-            var savingsAcc = new SavingsAccount
+            // 11. Sample Savings Accounts
+            var savingsAcc1 = new SavingsAccount
             {
                 AccountNumber = "SB-2026-0001",
                 CustomerId = cust1.Id,
@@ -423,7 +635,21 @@ public static class DbInitializer
                 Status = SavingsAccountStatus.Active,
                 OpenedDate = DateTime.UtcNow.AddMonths(-2)
             };
-            context.SavingsAccounts.Add(savingsAcc);
+
+            var savingsAcc2 = new SavingsAccount
+            {
+                AccountNumber = "SB-2026-0002",
+                CustomerId = cust3.Id,
+                BranchId = barasatBranch.Id,
+                SavingsSchemeId = savingsSchemes.First().Id,
+                CurrentBalance = 1500,
+                TotalDeposited = 1500,
+                TotalWithdrawn = 0,
+                Status = SavingsAccountStatus.Active,
+                OpenedDate = DateTime.UtcNow.AddMonths(-1)
+            };
+
+            context.SavingsAccounts.AddRange(savingsAcc1, savingsAcc2);
             await context.SaveChangesAsync();
 
             // 12. System Settings

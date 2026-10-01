@@ -1,390 +1,795 @@
 @page
 @model IndexModel
 @{
-    ViewData["Title"] = "RPS Rayhan Tech - Microfinance ERP";
+    ViewData["Title"] = "RPS RAYHAN TECH - MICROFINANCE ERP";
 }
 
-<div id="app" class="min-h-screen flex flex-col bg-slate-50">
-    <!-- 1. LOGIN OVERLAY (shown if not logged in) -->
-    <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-slate-100">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-600 text-white shadow-lg shadow-brand-500/30 mb-3 text-2xl font-bold">
+<div id="app" class="min-h-screen flex flex-col bg-[#f0f4f8]">
+
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         1. LOGIN SCREEN
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+    <div id="loginOverlay" class="fixed inset-0 z-50 flex items-center justify-center"
+         style="background: linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%)">
+        <!-- Decorative circles -->
+        <div class="absolute top-20 left-20 w-72 h-72 rounded-full opacity-10"
+             style="background:radial-gradient(circle,#059669,transparent)"></div>
+        <div class="absolute bottom-20 right-20 w-80 h-80 rounded-full opacity-10"
+             style="background:radial-gradient(circle,#2563eb,transparent)"></div>
+
+        <div class="relative bg-white/[0.05] backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-9 border border-white/10">
+            <!-- Brand -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl text-white text-2xl mb-4 shadow-xl"
+                     style="background:linear-gradient(135deg,#059669,#0ea5e9)">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                 </div>
-                <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">RPS Rayhan Tech</h2>
-                <p class="text-xs uppercase tracking-wider font-semibold text-brand-600 mt-0.5">Enterprise Microfinance ERP</p>
-                <p class="text-slate-500 text-sm mt-2">Sign in to your branch terminal</p>
+                <h2 class="text-2xl font-black text-white tracking-tight">RPS RAYHAN TECH</h2>
+                <span class="inline-block mt-1 px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest text-emerald-300 border border-emerald-500/40 bg-emerald-500/10">
+                    ENTERPRISE MICROFINANCE ERP
+                </span>
+                <p class="text-slate-400 text-xs font-bold mt-2 uppercase tracking-wider">SECURE Â· MULTI-BRANCH Â· ROLE-BASED</p>
             </div>
 
             <form id="loginForm" class="space-y-4" onsubmit="event.preventDefault(); handleLogin();">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Username</label>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-wider mb-1.5">USERNAME</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">
                             <i class="fa-solid fa-user text-sm"></i>
                         </span>
                         <input id="loginUsername" type="text" required value="admin"
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium"
-                            placeholder="Enter username" />
+                               class="w-full pl-10 pr-4 py-3 bg-white/[0.07] border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-white/10 transition font-bold" />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Password</label>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-wider mb-1.5">PASSWORD</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">
                             <i class="fa-solid fa-lock text-sm"></i>
                         </span>
                         <input id="loginPassword" type="password" required value="AdminPassword123!"
-                            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-medium"
-                            placeholder="Enter password" />
+                               class="w-full pl-10 pr-4 py-3 bg-white/[0.07] border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-white/10 transition font-bold" />
                     </div>
                 </div>
 
                 <button type="submit" id="loginBtn"
-                    class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold rounded-xl shadow-lg shadow-brand-500/25 transition-all duration-200 flex items-center justify-center space-x-2 text-sm mt-2">
-                    <span>Sign In to ERP</span>
-                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                        class="w-full py-3.5 rounded-2xl font-black uppercase tracking-wider text-sm text-white flex items-center justify-center gap-2 mt-2 transition hover:opacity-90 active:scale-[0.98] shadow-xl"
+                        style="background:linear-gradient(135deg,#059669,#0ea5e9); box-shadow:0 8px 24px rgba(5,150,105,0.4)">
+                    <span>ACCESS SYSTEM</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
 
-            <div class="mt-6 pt-5 border-t border-slate-100 text-center">
-                <p class="text-xs text-slate-400 mb-2 font-medium">Quick Demo Accounts (1-Click Fill):</p>
-                <div class="flex justify-center gap-2">
-                    <button onclick="fillLogin('admin', 'AdminPassword123!')" class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg font-medium transition border border-slate-200">
-                        <i class="fa-solid fa-shield-halved text-brand-600 mr-1"></i>Super Admin
+            <!-- Quick demo logins -->
+            <div class="mt-6 pt-5 border-t border-white/10">
+                <p class="text-center text-[10px] text-slate-500 mb-3 font-bold uppercase tracking-wider">QUICK DEMO ACCESS (TEST RBAC DATA ISOLATION):</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <button type="button" onclick="fillLogin('admin','AdminPassword123!')"
+                            class="px-2.5 py-2 text-[10px] font-black uppercase rounded-xl transition bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/20 text-center">
+                        <i class="fa-solid fa-shield-halved mr-1"></i>ADMIN
                     </button>
-                    <button onclick="fillLogin('manager', 'Manager123!')" class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg font-medium transition border border-slate-200">
-                        <i class="fa-solid fa-briefcase text-blue-600 mr-1"></i>Manager
+                    <button type="button" onclick="fillLogin('manager','Manager123!')"
+                            class="px-2.5 py-2 text-[10px] font-black uppercase rounded-xl transition bg-blue-500/10 text-blue-300 border border-blue-500/30 hover:bg-blue-500/20 text-center">
+                        <i class="fa-solid fa-briefcase mr-1"></i>HO MGR
                     </button>
-                    <button onclick="fillLogin('fieldofficer', 'Field123!')" class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 rounded-lg font-medium transition border border-slate-200">
-                        <i class="fa-solid fa-person-walking text-amber-600 mr-1"></i>Field Officer
+                    <button type="button" onclick="fillLogin('manager_barasat','Manager123!')"
+                            class="px-2.5 py-2 text-[10px] font-black uppercase rounded-xl transition bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 text-center">
+                        <i class="fa-solid fa-building mr-1"></i>BARASAT MGR
+                    </button>
+                    <button type="button" onclick="fillLogin('fieldofficer','Field123!')"
+                            class="px-2.5 py-2 text-[10px] font-black uppercase rounded-xl transition bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 text-center">
+                        <i class="fa-solid fa-person-walking mr-1"></i>HO FO
+                    </button>
+                    <button type="button" onclick="fillLogin('fieldofficer2','Field123!')"
+                            class="px-2.5 py-2 text-[10px] font-black uppercase rounded-xl transition bg-orange-500/10 text-orange-300 border border-orange-500/30 hover:bg-orange-500/20 text-center">
+                        <i class="fa-solid fa-person-walking mr-1"></i>BARASAT FO
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2. MAIN APPLICATION WORKSPACE -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+         2. MAIN APPLICATION WORKSPACE
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div id="mainWorkspace" class="flex-1 flex overflow-hidden hidden">
-        <!-- SIDEBAR -->
-        <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 transition-all duration-300 z-30">
-            <!-- Brand -->
-            <div class="h-16 flex items-center px-5 border-b border-slate-800 bg-slate-950/40">
-                <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-lg shadow-md mr-3">
-                    <i class="fa-solid fa-hand-holding-dollar"></i>
+
+        <!-- â”€â”€â”€ SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+        <!-- SIDEBAR BACKDROP OVERLAY -->
+        <div id="sidebarBackdrop" onclick="closeSidebar()"
+             class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+
+        <!-- SIDEBAR (LIGHT OFF-CANVAS DRAWER - CLOSED BY DEFAULT - DESIGN MATCHING IMAGE 2) -->
+        <aside id="sidebar"
+               class="fixed inset-y-0 left-0 w-80 max-w-[85vw] flex flex-col z-50 bg-white border-r-2 border-slate-200/90 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out">
+
+            <!-- Brand Header with Dark Navy Background & Close Button (Image 2) -->
+            <div class="p-4 flex items-center justify-between text-white" style="background: #0f2d59;">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0"
+                         style="background: linear-gradient(135deg,#059669,#0ea5e9)">
+                        <span id="drawerUserAvatar">SA</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h4 id="drawerUserName" class="font-black text-white text-xs leading-tight tracking-tight uppercase truncate">SYSTEM ADMIN</h4>
+                        <span id="drawerUserRole" class="inline-block mt-0.5 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-teal-500/20 text-teal-300 border border-teal-400/30">
+                            • SUPER ADMIN
+                        </span>
+                    </div>
                 </div>
-                <div class="truncate">
-                    <h1 class="font-bold text-white text-base leading-tight tracking-tight">RPS Rayhan Tech</h1>
-                    <p class="text-[10px] uppercase font-semibold text-brand-400 tracking-wider">Microfinance ERP</p>
+                <button onclick="closeSidebar()" title="Close Navigation (Esc)"
+                        class="w-8 h-8 rounded-xl flex items-center justify-center bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-400/30 transition text-sm cursor-pointer">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- Banner Pill (Image 2) -->
+            <div class="px-4 pt-3 pb-1">
+                <div class="w-full py-1.5 px-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest text-center">
+                    SYSTEM MODULES (11 TOTAL)
                 </div>
             </div>
 
-            <!-- Navigation Links -->
-            <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <!-- Navigation Links as Pill Cards (Image 2) -->
+            <div class="flex-1 overflow-y-auto px-3.5 py-2 space-y-1.5">
+
+                <!-- 1. Dashboard -->
                 <a href="#dashboard" onclick="switchTab('dashboard')" id="nav-dashboard"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl transition text-white bg-brand-600 shadow-sm">
-                    <i class="fa-solid fa-chart-pie w-5 text-center mr-3"></i>
-                    <span>Dashboard</span>
+                   class="sidebar-menu-card active" style="border-color:#10b981; background:#ecfdf5; color:#065f46;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-chart-pie text-emerald-600 text-sm"></i>
+                        <span>DASHBOARD</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-emerald-500 text-xs"></i>
                 </a>
 
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Field & Operations</div>
-
+                <!-- 2. Members & KYC -->
                 <a href="#customers" onclick="switchTab('customers')" id="nav-customers"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-users w-5 text-center mr-3"></i>
-                    <span>Members & KYC</span>
+                   class="sidebar-menu-card" style="border-color:#14b8a6; background:#f0fdfa; color:#115e59;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-users text-teal-600 text-sm"></i>
+                        <span>CUSTOMERS & KYC</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-teal-500 text-xs"></i>
                 </a>
 
+                <!-- 3. Centers & Groups -->
                 <a href="#centers" onclick="switchTab('centers')" id="nav-centers"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-people-roof w-5 text-center mr-3"></i>
-                    <span>Centers & JLG Groups</span>
+                   class="sidebar-menu-card" style="border-color:#06b6d4; background:#ecfeff; color:#155e75;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-people-roof text-cyan-600 text-sm"></i>
+                        <span>CENTERS & JLG GROUPS</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-cyan-500 text-xs"></i>
                 </a>
 
+                <!-- 4. Loans -->
                 <a href="#loans" onclick="switchTab('loans')" id="nav-loans"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-file-invoice-dollar w-5 text-center mr-3"></i>
-                    <span>Loan Management</span>
+                   class="sidebar-menu-card" style="border-color:#f59e0b; background:#fffbeb; color:#92400e;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-file-invoice-dollar text-amber-600 text-sm"></i>
+                        <span>LOAN MANAGEMENT</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-amber-500 text-xs"></i>
                 </a>
 
+                <!-- 5. Field Collection -->
                 <a href="#collections" onclick="switchTab('collections')" id="nav-collections"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-hand-holding-dollar w-5 text-center mr-3"></i>
-                    <span>Field Collection Sheet</span>
+                   class="sidebar-menu-card" style="border-color:#22c55e; background:#f0fdf4; color:#166534;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-hand-holding-dollar text-green-600 text-sm"></i>
+                        <span>FIELD COLLECTIONS</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-green-500 text-xs"></i>
                 </a>
 
+                <!-- 6. Savings -->
                 <a href="#savings" onclick="switchTab('savings')" id="nav-savings"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-piggy-bank w-5 text-center mr-3"></i>
-                    <span>Savings & Deposits</span>
+                   class="sidebar-menu-card" style="border-color:#a855f7; background:#faf5ff; color:#6b21a8;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-piggy-bank text-purple-600 text-sm"></i>
+                        <span>SAVINGS & DPS</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-purple-500 text-xs"></i>
                 </a>
 
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Finance & Accounts</div>
-
+                <!-- 7. Accounts -->
                 <a href="#accounting" onclick="switchTab('accounting')" id="nav-accounting"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-book-journal-whills w-5 text-center mr-3"></i>
-                    <span>Double-Entry Accounts</span>
+                   class="sidebar-menu-card" style="border-color:#3b82f6; background:#eff6ff; color:#1e40af;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-book-journal-whills text-blue-600 text-sm"></i>
+                        <span>DOUBLE-ENTRY ACCOUNTS</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-blue-500 text-xs"></i>
                 </a>
 
+                <!-- 8. Expenses -->
                 <a href="#expenses" onclick="switchTab('expenses')" id="nav-expenses"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-receipt w-5 text-center mr-3"></i>
-                    <span>Expenses & Incomes</span>
+                   class="sidebar-menu-card" style="border-color:#f43f5e; background:#fff1f2; color:#9f1239;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-receipt text-rose-600 text-sm"></i>
+                        <span>EXPENSES & INCOMES</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-rose-500 text-xs"></i>
                 </a>
 
-                <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">Administration</div>
-
+                <!-- 9. Branches -->
                 <a href="#branches" onclick="switchTab('branches')" id="nav-branches"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-building-columns w-5 text-center mr-3"></i>
-                    <span>Branches & Company</span>
+                   class="sidebar-menu-card" style="border-color:#6366f1; background:#eef2ff; color:#3730a3;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-building-columns text-indigo-600 text-sm"></i>
+                        <span>BRANCHES & COMPANY</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-indigo-500 text-xs"></i>
                 </a>
 
+                <!-- 10. Staff -->
                 <a href="#employees" onclick="switchTab('employees')" id="nav-employees"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-id-card-clip w-5 text-center mr-3"></i>
-                    <span>Staff & Attendance</span>
+                   class="sidebar-menu-card" style="border-color:#8b5cf6; background:#f5f3ff; color:#5b21b6;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-id-card-clip text-violet-600 text-sm"></i>
+                        <span>STAFF & ATTENDANCE</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-violet-500 text-xs"></i>
                 </a>
 
+                <!-- 11. Reports -->
                 <a href="#reports" onclick="switchTab('reports')" id="nav-reports"
-                    class="nav-link flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-chart-line w-5 text-center mr-3"></i>
-                    <span>Audit & Reports</span>
+                   class="sidebar-menu-card" style="border-color:#f97316; background:#fff7ed; color:#9a3412;">
+                    <span class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-chart-line text-orange-600 text-sm"></i>
+                        <span>AUDIT & REPORTS</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-right text-orange-500 text-xs"></i>
                 </a>
             </div>
 
-            <!-- User profile footer -->
-            <div class="p-3.5 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                <div class="flex items-center min-w-0 mr-2">
-                    <div class="w-8 h-8 rounded-full bg-brand-700 text-white flex items-center justify-center font-bold text-xs mr-2.5 flex-shrink-0">
-                        <span id="userAvatar">A</span>
-                    </div>
-                    <div class="truncate">
-                        <p id="userNameDisplay" class="text-xs font-semibold text-white truncate">Administrator</p>
-                        <p id="userRoleDisplay" class="text-[10px] text-brand-400 truncate font-medium">Super Admin</p>
-                    </div>
+            <!-- Footer: Live Status & Logout (Image 2) -->
+            <div class="px-4 py-3 border-t border-slate-200 bg-slate-50">
+                <div class="flex items-center justify-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>RPS RAYHAN TECH • LIVE DATABASE • ONLINE</span>
                 </div>
-                <button onclick="handleLogout()" title="Logout" class="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                <button onclick="handleLogout()"
+                        class="w-full py-2 px-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-black uppercase flex items-center justify-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>LOGOUT SESSION</span>
                 </button>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
-        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-            <!-- TOP BAR -->
-            <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-20 flex-shrink-0">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center bg-slate-100 rounded-xl px-3 py-1.5 border border-slate-200">
-                        <i class="fa-solid fa-location-dot text-brand-600 text-xs mr-2"></i>
-                        <span class="text-xs font-semibold text-slate-600 mr-2">Branch:</span>
-                        <select id="branchSelector" onchange="onBranchChange()" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer">
-                            <option value="">All Branches (Consolidated)</option>
-                        </select>
+        <!-- MAIN WORKSPACE CONTENT -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#f0f4f8] w-full">
+
+            <!-- TOP BAR (ROYAL BLUE AS IN IMAGE 1 & 3) -->
+            <header class="h-16 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 z-20"
+                    style="background: linear-gradient(180deg, #0969da 0%, #0654b5 100%); border-bottom: 2px solid #03449e; box-shadow: 0 4px 14px rgba(6,84,181,0.25)">
+
+                <!-- Left: Hamburger Menu + Logo + Brand + Live Date -->
+                <div class="flex items-center gap-3">
+                    <!-- Hamburger Toggle Button -->
+                    <button id="sidebarToggleBtn" onclick="toggleSidebar()"
+                            title="Open Navigation Menu"
+                            class="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-xl font-black text-xs uppercase border border-white/25 shadow-sm transition active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-bars text-sm"></i>
+                        <span class="hidden sm:inline">MENU</span>
+                    </button>
+
+                    <!-- Circular Brand Logo -->
+                    <div class="flex items-center gap-2.5 pl-1">
+                        <div class="w-9 h-9 rounded-full bg-white flex items-center justify-center text-blue-700 text-base flex-shrink-0 shadow-md border-2 border-white/40">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                        <div class="leading-tight">
+                            <h1 class="font-black text-white text-sm sm:text-base tracking-tight uppercase">RPS RAYHAN TECH</h1>
+                            <p class="text-[9px] font-black uppercase tracking-widest text-emerald-300">MICROFINANCE ERP</p>
+                        </div>
                     </div>
 
-                    <div class="hidden md:flex items-center text-xs font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
-                        <i class="fa-regular fa-calendar-check text-slate-400 mr-2"></i>
-                        <span id="liveDateTime">Loading date...</span>
+                    <!-- Live Date/Clock Pill -->
+                    <div class="hidden xl:flex items-center gap-2 text-xs font-bold text-white/95 bg-white/10 px-3 py-1.5 rounded-xl border border-white/15 shadow-inner">
+                        <i class="fa-regular fa-calendar-days text-emerald-300"></i>
+                        <span id="liveDateTime">Loading...</span>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-3">
-                    <!-- Quick action buttons -->
-                    <button onclick="openApplyLoanModal()" class="hidden sm:inline-flex items-center px-3.5 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold rounded-xl border border-brand-200 transition shadow-sm">
-                        <i class="fa-solid fa-plus mr-1.5"></i> New Loan
-                    </button>
-                    <button onclick="switchTab('collections')" class="hidden sm:inline-flex items-center px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl border border-blue-200 transition shadow-sm">
-                        <i class="fa-solid fa-receipt mr-1.5"></i> Collect EMI
-                    </button>
-                    <button onclick="openRegisterCustomerModal()" class="inline-flex items-center px-3.5 py-2 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white text-xs font-bold rounded-xl shadow-md shadow-brand-500/25 transition">
-                        <i class="fa-solid fa-user-plus mr-1.5"></i> Add Member
+                <!-- Right: Branch Selector + Role Badge + User Avatar + Quick Clean DB -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Branch Selector -->
+                    <div class="flex items-center bg-white text-slate-800 rounded-xl px-3 py-1.5 shadow-sm border border-white/30 gap-1.5">
+                        <i class="fa-solid fa-building text-blue-600 text-xs"></i>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider hidden sm:inline">BRANCH:</span>
+                        <select id="branchSelector" onchange="onBranchChange()"
+                                class="bg-transparent text-xs font-black text-slate-800 focus:outline-none cursor-pointer uppercase">
+                            <option value="">ALL BRANCHES</option>
+                        </select>
+                    </div>
+
+                    <!-- Role Badge -->
+                    <span id="userRoleBadgeTop" class="hidden md:inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-emerald-400/20 text-emerald-200 border border-emerald-300/30">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+                        <span id="userRoleTextTop">SUPER ADMIN</span>
+                    </span>
+
+                    <!-- User Profile Pill -->
+                    <div class="flex items-center gap-2 bg-white/15 border border-white/20 rounded-xl px-2.5 py-1 text-white">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-500 flex items-center justify-center text-xs font-black text-white shadow-sm" id="userAvatarTop">SA</div>
+                        <span class="text-xs font-black hidden lg:inline uppercase" id="userNameTop">ADMIN</span>
+                        <button onclick="handleLogout()" title="Logout" class="text-white/70 hover:text-rose-300 ml-1 transition cursor-pointer p-0.5">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Clean DB Button (Admin only) -->
+                    <button id="cleanDbBtn" onclick="confirmClearDummyData()"
+                            class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 text-rose-100 text-[10px] font-black uppercase rounded-xl border border-rose-300/40 bg-rose-500/30 hover:bg-rose-500/50 transition cursor-pointer">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                        <span class="hidden md:inline">CLEAN DB</span>
                     </button>
                 </div>
             </header>
 
             <!-- SCROLLABLE PAGE CONTAINER -->
-            <main class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- VIEW 1: DASHBOARD -->
-                <div id="view-dashboard" class="tab-view space-y-6">
-                    <!-- KPI Banner -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Today Collection -->
-                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Collection</p>
-                                    <h3 id="statTodayCollection" class="text-2xl font-black text-slate-900 mt-1">₹0.00</h3>
-                                    <p class="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center">
-                                        <i class="fa-solid fa-arrow-trend-up mr-1"></i> Cash & Bank deposits
-                                    </p>
-                                </div>
-                                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-                                    <i class="fa-solid fa-hand-holding-dollar"></i>
-                                </div>
+            <main class="flex-1 overflow-y-auto p-5 space-y-5">
+
+                <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                     VIEW 1: DASHBOARD
+                â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+                <!-- ══════════════════════════════════════════════════
+                     VIEW 1: DASHBOARD (DESIGN MATCHING IMAGE 1)
+                ══════════════════════════════════════════════════ -->
+                <div id="view-dashboard" class="tab-view space-y-4">
+
+                    <!-- Top Banner: Company Title & Database Live status (Image 1) -->
+                    <div class="bg-white rounded-2xl p-4 border-2 border-emerald-500/60 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center text-white text-lg shadow-md flex-shrink-0">
+                                <i class="fa-solid fa-landmark"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">SUBIDHA LOAN LTD / RPS RAYHAN TECH</h2>
+                                <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wide">ENTERPRISE MICROFINANCE CORE BANKING & FIELD COLLECTION SYSTEM</p>
                             </div>
                         </div>
-
-                        <!-- Today Disbursement -->
-                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Disbursement</p>
-                                    <h3 id="statTodayDisbursement" class="text-2xl font-black text-slate-900 mt-1">₹0.00</h3>
-                                    <p class="text-[11px] text-blue-600 font-semibold mt-1 flex items-center">
-                                        <i class="fa-solid fa-money-bill-transfer mr-1"></i> Disbursed loans
-                                    </p>
-                                </div>
-                                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-                                    <i class="fa-solid fa-money-bill-wave"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Active Loan Portfolio -->
-                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Portfolio</p>
-                                    <h3 id="statTotalPortfolio" class="text-2xl font-black text-slate-900 mt-1">₹0.00</h3>
-                                    <p class="text-[11px] text-brand-600 font-semibold mt-1 flex items-center">
-                                        <span id="statActiveLoansCount">0</span> Active Loans
-                                    </p>
-                                </div>
-                                <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl">
-                                    <i class="fa-solid fa-briefcase"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Overdue Loans -->
-                        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Overdue Risk</p>
-                                    <h3 id="statOverdueAmount" class="text-2xl font-black text-rose-600 mt-1">₹0.00</h3>
-                                    <p class="text-[11px] text-rose-500 font-semibold mt-1 flex items-center">
-                                        <span id="statOverdueCount">0</span> Defaulted / Overdue
-                                    </p>
-                                </div>
-                                <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
-                                    <i class="fa-solid fa-triangle-exclamation"></i>
-                                </div>
-                            </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 border-2 border-emerald-500">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                DATABASE LIVE
+                            </span>
+                            <span class="text-xs font-black px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 uppercase border border-slate-200">v2.5 PROD</span>
                         </div>
                     </div>
 
-                    <!-- Secondary KPI Bar (Cash, Bank, Savings, Profit) -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="bg-white rounded-xl p-4 border border-slate-200/70 shadow-sm flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-base">
-                                <i class="fa-solid fa-vault"></i>
-                            </div>
+                    <!-- Row 1: 7 Colorful Primary Stat Cards (Image 1) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+
+                        <!-- 1. Customers (Sky Blue) -->
+                        <div class="card-sky shadow-xs flex flex-col justify-between">
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase">Cash in Hand</p>
-                                <p id="statCashBalance" class="text-lg font-bold text-slate-800">₹0.00</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">CUSTOMERS</span>
+                                    <i class="fa-solid fa-users text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTotalCustomers" class="text-xl sm:text-2xl font-black mt-2">0</h3>
                             </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">ACTIVE MEMBERS</p>
                         </div>
 
-                        <div class="bg-white rounded-xl p-4 border border-slate-200/70 shadow-sm flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-base">
-                                <i class="fa-solid fa-building-columns"></i>
-                            </div>
+                        <!-- 2. Active Loans (Yellow) -->
+                        <div class="card-yellow shadow-xs flex flex-col justify-between">
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase">Bank Current Bal</p>
-                                <p id="statBankBalance" class="text-lg font-bold text-slate-800">₹0.00</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">ACTIVE LOANS</span>
+                                    <i class="fa-solid fa-file-invoice-dollar text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statActiveLoansCount" class="text-xl sm:text-2xl font-black mt-2">0</h3>
                             </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">DISBURSED LOANS</p>
                         </div>
 
-                        <div class="bg-white rounded-xl p-4 border border-slate-200/70 shadow-sm flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-base">
-                                <i class="fa-solid fa-piggy-bank"></i>
-                            </div>
+                        <!-- 3. Collection (Green) -->
+                        <div class="card-green shadow-xs flex flex-col justify-between">
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase">Member Savings</p>
-                                <p id="statTotalSavings" class="text-lg font-bold text-slate-800">₹0.00</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">COLLECTION</span>
+                                    <i class="fa-solid fa-hand-holding-dollar text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTodayCollection" class="text-xl sm:text-2xl font-black mt-2">₹0.00</h3>
                             </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">CASH & RECOVERY</p>
                         </div>
 
-                        <div class="bg-white rounded-xl p-4 border border-slate-200/70 shadow-sm flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-base">
-                                <i class="fa-solid fa-scale-balanced"></i>
-                            </div>
+                        <!-- 4. Outstanding (Blue) -->
+                        <div class="card-blue shadow-xs flex flex-col justify-between">
                             <div>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase">Net Monthly Profit</p>
-                                <p id="statNetProfit" class="text-lg font-bold text-teal-600">₹0.00</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">OUTSTANDING</span>
+                                    <i class="fa-solid fa-money-bill-trend-up text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTotalPortfolio" class="text-xl sm:text-2xl font-black mt-2">₹0.00</h3>
                             </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">PORTFOLIO BAL</p>
+                        </div>
+
+                        <!-- 5. Savings (Purple) -->
+                        <div class="card-purple shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">SAVINGS</span>
+                                    <i class="fa-solid fa-piggy-bank text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTotalSavings" class="text-xl sm:text-2xl font-black mt-2">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">MEMBER DEPOSITS</p>
+                        </div>
+
+                        <!-- 6. Disbursed (Orange) -->
+                        <div class="card-orange shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">DISBURSED</span>
+                                    <i class="fa-solid fa-money-bill-transfer text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTodayDisbursement" class="text-xl sm:text-2xl font-black mt-2">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">TODAY DISBURSAL</p>
+                        </div>
+
+                        <!-- 7. Overdue (Rose) -->
+                        <div class="card-rose shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">OVERDUE</span>
+                                    <i class="fa-solid fa-triangle-exclamation text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statOverdueAmount" class="text-xl sm:text-2xl font-black mt-2">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75"><span id="statOverdueCount">0</span> DELINQUENT</p>
                         </div>
                     </div>
 
-                    <!-- Charts & Performance Row -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Chart Card -->
-                        <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h4 class="text-base font-bold text-slate-900">Disbursement & Collection Trend</h4>
-                                    <p class="text-xs text-slate-500">Monthly loan operations graph</p>
+                    <!-- Row 2: 7 Pink Secondary Stat Cards (Image 1) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+
+                        <!-- 1. Vault Cash -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">VAULT CASH</span>
+                                    <i class="fa-solid fa-vault text-sm opacity-80"></i>
                                 </div>
-                                <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">Last 6 Months</span>
+                                <h3 id="statCashBalance" class="text-base sm:text-lg font-black mt-1">₹0.00</h3>
                             </div>
-                            <div class="h-64">
-                                <canvas id="monthlyTrendChart"></canvas>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">IN-HAND CASH</p>
+                        </div>
+
+                        <!-- 2. Bank Balance -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">BANK CURRENT</span>
+                                    <i class="fa-solid fa-building-columns text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statBankBalance" class="text-base sm:text-lg font-black mt-1">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">COMMERCIAL BANK</p>
+                        </div>
+
+                        <!-- 3. Day Cash In -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">DAY CASH IN</span>
+                                    <i class="fa-solid fa-arrow-trend-up text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statDayCashIn" class="text-base sm:text-lg font-black mt-1">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">COLLECTION INFLOW</p>
+                        </div>
+
+                        <!-- 4. Day Cash Out -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">DAY CASH OUT</span>
+                                    <i class="fa-solid fa-arrow-trend-down text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statDayCashOut" class="text-base sm:text-lg font-black mt-1">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">LOANS & EXPENSES</p>
+                        </div>
+
+                        <!-- 5. Net Profit / Cash Flow -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">NET PROFIT</span>
+                                    <i class="fa-solid fa-scale-balanced text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statNetProfit" class="text-base sm:text-lg font-black mt-1">₹0.00</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">MONTH NET PROFIT</p>
+                        </div>
+
+                        <!-- 6. Branches Count -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">BRANCH NETWORK</span>
+                                    <i class="fa-solid fa-city text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTotalBranches" class="text-base sm:text-lg font-black mt-1">2</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">ACTIVE BRANCHES</p>
+                        </div>
+
+                        <!-- 7. Active Staff -->
+                        <div class="card-pink shadow-xs flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-black uppercase tracking-wider opacity-80">ACTIVE STAFF</span>
+                                    <i class="fa-solid fa-id-card-clip text-sm opacity-80"></i>
+                                </div>
+                                <h3 id="statTotalStaff" class="text-base sm:text-lg font-black mt-1">5</h3>
+                            </div>
+                            <p class="text-[9px] font-black uppercase mt-1 opacity-75">OFFICERS & MANAGERS</p>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter Pills (Image 1) -->
+                    <div class="flex items-center gap-2 overflow-x-auto py-1 scrollbar-none">
+                        <button onclick="switchTab('dashboard')" class="px-4 py-2 rounded-full font-black text-xs uppercase bg-slate-900 text-white shadow-sm transition">
+                            ALL OPERATIONS
+                        </button>
+                        <button onclick="switchTab('loans')" class="px-4 py-2 rounded-full font-black text-xs uppercase bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:text-blue-700 transition">
+                            LOAN PORTFOLIO
+                        </button>
+                        <button onclick="switchTab('collections')" class="px-4 py-2 rounded-full font-black text-xs uppercase bg-white text-slate-700 border-2 border-slate-200 hover:border-emerald-400 hover:text-emerald-700 transition">
+                            DAY BOOK CASH LOG
+                        </button>
+                        <button onclick="switchTab('branches')" class="px-4 py-2 rounded-full font-black text-xs uppercase bg-white text-slate-700 border-2 border-slate-200 hover:border-indigo-400 hover:text-indigo-700 transition">
+                            BRANCH NETWORK
+                        </button>
+                        <button onclick="switchTab('employees')" class="px-4 py-2 rounded-full font-black text-xs uppercase bg-white text-slate-700 border-2 border-slate-200 hover:border-purple-400 hover:text-purple-700 transition">
+                            HR & PAYROLL
+                        </button>
+                        <button onclick="switchTab('savings')" class="px-4 py-2 rounded-full font-black text-xs uppercase bg-white text-slate-700 border-2 border-slate-200 hover:border-pink-400 hover:text-pink-700 transition">
+                            SAVINGS & DPS
+                        </button>
+                    </div>
+
+                    <!-- Row 3: 2-Column Split (Chart + Branch Perf on Left, Quick Action on Right) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+                        <!-- Left Column (Chart + Branch Performance Table) -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <!-- Trend Chart -->
+                            <div class="bg-white rounded-2xl p-5 border-2 border-slate-200/90 shadow-sm">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider">DISBURSEMENT & COLLECTION TREND</h4>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">MONTHLY OPERATIONAL RECOVERY & LOAN SANCTIONS</p>
+                                    </div>
+                                    <span class="text-[10px] font-black px-3 py-1 rounded-xl uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-200">LAST 6 MONTHS</span>
+                                </div>
+                                <div class="h-60">
+                                    <canvas id="monthlyTrendChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Branch Performance Table -->
+                            <div class="bg-white rounded-2xl p-5 border-2 border-slate-200/90 shadow-sm">
+                                <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                                    <div>
+                                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider">BRANCH RECOVERY & PORTFOLIO RANKING</h4>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">RECOVERY EFFICIENCY ACROSS NETWORK</p>
+                                    </div>
+                                    <span class="text-[10px] font-black px-2.5 py-1 rounded-xl uppercase bg-blue-50 text-blue-700 border border-blue-200">REAL-TIME</span>
+                                </div>
+                                <div id="branchPerformanceList" class="space-y-2.5">
+                                    <div class="text-center py-4 text-slate-400 text-xs font-bold uppercase">Loading branch stats...</div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Branch Performance Card -->
-                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
-                            <h4 class="text-base font-bold text-slate-900 mb-1">Branch Portfolio Performance</h4>
-                            <p class="text-xs text-slate-500 mb-4">Live recovery and loan status</p>
-                            <div class="flex-1 overflow-y-auto space-y-3" id="branchPerformanceList">
-                                <div class="text-center py-8 text-slate-400 text-sm">Loading branch statistics...</div>
+                        <!-- Right Column: + QUICK ACTION Panel (Image 1) -->
+                        <div class="bg-white rounded-2xl p-5 border-2 border-slate-200/90 shadow-sm flex flex-col gap-3">
+                            <div class="flex items-center justify-between border-b-2 border-slate-100 pb-3">
+                                <div>
+                                    <h4 class="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-solid fa-bolt text-amber-500"></i> + QUICK ACTIONS
+                                    </h4>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase">DAILY FIELD & BRANCH OPERATIONS</p>
+                                </div>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                            </div>
+
+                            <div class="space-y-2">
+                                <!-- 1. New Customer -->
+                                <button onclick="showRegisterMemberPage()"
+                                        class="w-full flex items-center justify-between p-3 rounded-2xl border-2 border-sky-400 bg-sky-50 hover:bg-sky-100 text-sky-950 transition font-black text-xs uppercase shadow-xs">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-sky-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                            <i class="fa-solid fa-user-plus"></i>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-black text-sky-950">NEW CUSTOMER</div>
+                                            <div class="text-[9px] font-bold text-sky-600 normal-case">Register & KYC borrower</div>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-sky-500 text-xs"></i>
+                                </button>
+
+                                <!-- 2. Apply Loan -->
+                                <button onclick="showApplyLoanPage()"
+                                        class="w-full flex items-center justify-between p-3 rounded-2xl border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-950 transition font-black text-xs uppercase shadow-xs">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-amber-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                            <i class="fa-solid fa-file-circle-plus"></i>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-black text-amber-950">APPLY LOAN</div>
+                                            <div class="text-[9px] font-bold text-amber-600 normal-case">Fresh loan sanction</div>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-amber-500 text-xs"></i>
+                                </button>
+
+                                <!-- 3. Collect Payment -->
+                                <button onclick="switchTab('collections')"
+                                        class="w-full flex items-center justify-between p-3 rounded-2xl border-2 border-emerald-400 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 transition font-black text-xs uppercase shadow-xs">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-black text-emerald-950">COLLECT PAYMENT</div>
+                                            <div class="text-[9px] font-bold text-emerald-600 normal-case">Daily EMI collection sheet</div>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-emerald-500 text-xs"></i>
+                                </button>
+
+                                <!-- 4. Savings Deposit -->
+                                <button onclick="switchTab('savings')"
+                                        class="w-full flex items-center justify-between p-3 rounded-2xl border-2 border-purple-400 bg-purple-50 hover:bg-purple-100 text-purple-950 transition font-black text-xs uppercase shadow-xs">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                            <i class="fa-solid fa-piggy-bank"></i>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-black text-purple-950">SAVINGS DEPOSIT</div>
+                                            <div class="text-[9px] font-bold text-purple-600 normal-case">Member savings & DPS</div>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-purple-500 text-xs"></i>
+                                </button>
+
+                                <!-- 5. Add Expense -->
+                                <button onclick="switchTab('expenses')"
+                                        class="w-full flex items-center justify-between p-3 rounded-2xl border-2 border-rose-400 bg-rose-50 hover:bg-rose-100 text-rose-950 transition font-black text-xs uppercase shadow-xs">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-rose-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                            <i class="fa-solid fa-receipt"></i>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-black text-rose-950">ADD EXPENSE</div>
+                                            <div class="text-[9px] font-bold text-rose-600 normal-case">Office rent & utilities</div>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-rose-500 text-xs"></i>
+                                </button>
+
+                                <!-- 6. Audit Report -->
+                                <button onclick="switchTab('reports')"
+                                        class="w-full flex items-center justify-between p-3 rounded-2xl border-2 border-orange-400 bg-orange-50 hover:bg-orange-100 text-orange-950 transition font-black text-xs uppercase shadow-xs">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-orange-600 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                                            <i class="fa-solid fa-chart-line"></i>
+                                        </div>
+                                        <div class="text-left">
+                                            <div class="font-black text-orange-950">AUDIT REPORT</div>
+                                            <div class="text-[9px] font-bold text-orange-600 normal-case">Financial statements & export</div>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-orange-500 text-xs"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW 2: CUSTOMERS / KYC -->
-                <div id="view-customers" class="tab-view space-y-6 hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Customer & KYC Management</h3>
-                            <p class="text-xs text-slate-500">Borrowers, members, Aadhaar/PAN KYC, and biometrics</p>
+
+                <!-- ══════════════════════════════════════════════════
+                     VIEW 2: CUSTOMERS / KYC LIST (IMAGE 3 DESIGN)
+                ══════════════════════════════════════════════════ -->
+                <div id="view-customers" class="tab-view space-y-4 hidden">
+
+                    <!-- Top: 7 Mini Stat Cards (Image 3) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+                        <div class="card-sky shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">CUSTOMERS</span>
+                            <span id="custStatTotal" class="text-lg font-black block mt-0.5">0</span>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div class="card-green shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">ACTIVE</span>
+                            <span id="custStatActive" class="text-lg font-black block mt-0.5">0</span>
+                        </div>
+                        <div class="card-yellow shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">BORROWERS</span>
+                            <span id="custStatBorrowers" class="text-lg font-black block mt-0.5">0</span>
+                        </div>
+                        <div class="card-blue shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">VERIFIED KYC</span>
+                            <span id="custStatKycVerified" class="text-lg font-black block mt-0.5">0</span>
+                        </div>
+                        <div class="card-orange shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">PENDING KYC</span>
+                            <span id="custStatKycPending" class="text-lg font-black block mt-0.5">0</span>
+                        </div>
+                        <div class="card-purple shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">UNASSIGNED</span>
+                            <span id="custStatUnassigned" class="text-lg font-black block mt-0.5">0</span>
+                        </div>
+                        <div class="card-rose shadow-xs text-center !py-2.5 !px-3">
+                            <span class="text-[9px] font-black uppercase block opacity-80">INACTIVE</span>
+                            <span id="custStatInactive" class="text-lg font-black block mt-0.5">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Filter Toolbar (Image 3) -->
+                    <div class="bg-white p-4 rounded-2xl border-2 border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase bg-blue-600 text-white shadow-xs">
+                                <i class="fa-solid fa-users mr-1"></i> FILTER CUSTOMERS
+                            </span>
                             <div class="relative">
-                                <input type="text" id="custSearchInput" onkeyup="searchCustomers()" placeholder="Search Aadhaar, Phone, Name..."
-                                    class="pl-9 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 w-64 shadow-sm" />
+                                <input type="text" id="custSearchInput" onkeyup="searchCustomers()" placeholder="SEARCH AADHAAR, PHONE, NAME..."
+                                       class="pl-9 pr-4 py-2 text-xs bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-600 w-64 font-bold uppercase shadow-xs" />
                                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                             </div>
-                            <button onclick="openRegisterCustomerModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center">
-                                <i class="fa-solid fa-user-plus mr-1.5"></i> Register New Member
+                            <select id="custFilterBranch" onchange="loadCustomers()"
+                                    class="py-2 px-3 text-xs bg-slate-50 border-2 border-slate-200 rounded-xl font-black uppercase focus:outline-none cursor-pointer">
+                                <option value="">ALL BRANCHES</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="loadCustomers()"
+                                    class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-black uppercase rounded-xl border border-slate-200 transition cursor-pointer">
+                                <i class="fa-solid fa-filter mr-1"></i> FILTER
+                            </button>
+                            <button onclick="showRegisterMemberPage()"
+                                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase rounded-xl shadow-md transition flex items-center cursor-pointer">
+                                <i class="fa-solid fa-user-plus mr-1.5"></i> + ADD
+                            </button>
+                            <button onclick="exportCustomersCsv()"
+                                    class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-black uppercase rounded-xl border border-emerald-200 transition cursor-pointer">
+                                <i class="fa-solid fa-file-excel mr-1"></i> EXCEL
                             </button>
                         </div>
                     </div>
 
-                    <!-- Customers Table -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <!-- Customers Table (Dark Navy Header as in Image 3) -->
+                    <div class="bg-white rounded-2xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse text-xs">
+                            <table class="w-full text-left border-collapse text-xs erp-table">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                        <th class="py-3.5 px-4">Member ID</th>
-                                        <th class="py-3.5 px-4">Full Name & Guardian</th>
-                                        <th class="py-3.5 px-4">Phone</th>
-                                        <th class="py-3.5 px-4">Branch / Center / Group</th>
-                                        <th class="py-3.5 px-4">Aadhaar / KYC</th>
-                                        <th class="py-3.5 px-4">Occupation</th>
-                                        <th class="py-3.5 px-4 text-center">Status</th>
-                                        <th class="py-3.5 px-4 text-right">Actions</th>
+                                    <tr>
+                                        <th class="py-3.5 px-4">MEMBER ID</th>
+                                        <th class="py-3.5 px-4">MEMBER NAME & GUARDIAN</th>
+                                        <th class="py-3.5 px-4">CONTACT</th>
+                                        <th class="py-3.5 px-4">BRANCH & CENTER</th>
+                                        <th class="py-3.5 px-4">AADHAAR / KYC</th>
+                                        <th class="py-3.5 px-4">OCCUPATION</th>
+                                        <th class="py-3.5 px-4 text-center">STATUS</th>
+                                        <th class="py-3.5 px-4 text-right">ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody id="customersTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tbody id="customersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                     <tr>
-                                        <td colspan="8" class="text-center py-8 text-slate-400">Loading members...</td>
+                                        <td colspan="8" class="text-center py-8 text-slate-400 uppercase font-black">Loading member directory...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -392,43 +797,336 @@
                     </div>
                 </div>
 
+                <!-- VIEW 2.1: FULL PAGE DEDICATED MEMBER REGISTRATION SCREEN (NO POPUP) -->
+                <div id="view-customer-register" class="tab-view space-y-6 hidden">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-emerald-100 shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="switchTab('customers')" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">NEW MEMBER REGISTRATION & KYC ENROLLMENT</h3>
+                                <p class="text-xs font-bold text-slate-400 uppercase">ENTER COMPLETE BORROWER, GUARDIAN, BIOMETRIC & GUARANTOR DETAILS</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('customers')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider rounded-2xl transition">
+                            BACK TO MEMBER DIRECTORY
+                        </button>
+                    </div>
+
+                    <form id="formRegisterCustomerPage" onsubmit="event.preventDefault(); submitRegisterCustomer();" class="bg-white rounded-3xl p-8 border-2 border-slate-200/90 shadow-md space-y-6 text-xs">
+                        <!-- Section: Personal Info -->
+                        <div>
+                            <h4 class="text-xs font-black text-emerald-800 uppercase tracking-widest border-b-2 border-emerald-100 pb-2 mb-4 flex items-center">
+                                <i class="fa-solid fa-user-check mr-2 text-emerald-600"></i> PERSONAL & IDENTITY DETAILS
+                            </h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-bold">
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">FIRST NAME *</label>
+                                    <input id="newCustFirstName" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-emerald-600 uppercase font-black" placeholder="First Name" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">LAST NAME *</label>
+                                    <input id="newCustLastName" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-emerald-600 uppercase font-black" placeholder="Last Name" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">GUARDIAN NAME (SPOUSE/FATHER) *</label>
+                                    <input id="newCustGuardian" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-emerald-600 uppercase font-black" placeholder="Guardian Name" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">PHONE NUMBER (10 DIGITS) *</label>
+                                    <input id="newCustPhone" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-emerald-600 font-mono font-black" placeholder="Phone Number" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">DATE OF BIRTH</label>
+                                    <input id="newCustDob" type="date" value="1995-01-01" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">GENDER</label>
+                                    <select id="newCustGender" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-black uppercase">
+                                        <option value="2">FEMALE</option>
+                                        <option value="1">MALE</option>
+                                        <option value="3">OTHER</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: KYC & Occupation -->
+                        <div>
+                            <h4 class="text-xs font-black text-blue-800 uppercase tracking-widest border-b-2 border-blue-100 pb-2 mb-4 flex items-center">
+                                <i class="fa-solid fa-address-card mr-2 text-blue-600"></i> KYC IDENTIFICATION & CENTER AFFILIATION
+                            </h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-bold">
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">AADHAAR NUMBER *</label>
+                                    <input id="newCustAadhaar" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 font-mono font-black" placeholder="12-digit Aadhaar Number" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">PAN NUMBER (OPTIONAL)</label>
+                                    <input id="newCustPan" type="text" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl uppercase font-mono font-black" placeholder="PAN Number" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">CENTER / GROUP</label>
+                                    <select id="newCustCenter" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl font-black uppercase">
+                                        <!-- populated dynamically -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">OCCUPATION</label>
+                                    <input id="newCustOccupation" type="text" value="Dairy & Small Business" class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl uppercase font-black" />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">RESIDENTIAL ADDRESS *</label>
+                                    <input id="newCustAddress" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl uppercase font-black" placeholder="Village, Landmark, Pincode" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Nominee & Guarantor -->
+                        <div>
+                            <h4 class="text-xs font-black text-purple-800 uppercase tracking-widest border-b-2 border-purple-100 pb-2 mb-4 flex items-center">
+                                <i class="fa-solid fa-people-arrows mr-2 text-purple-600"></i> NOMINEE & GUARANTOR DETAILS
+                            </h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-bold">
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">NOMINEE FULL NAME *</label>
+                                    <input id="newCustNominee" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl uppercase font-black" placeholder="Nominee Full Name" />
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 uppercase tracking-wider mb-1">GUARANTOR FULL NAME *</label>
+                                    <input id="newCustGuarantor" type="text" required class="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl uppercase font-black" placeholder="Guarantor Full Name" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end space-x-3 pt-4 border-t-2 border-slate-100">
+                            <button type="button" onclick="switchTab('customers')" class="px-5 py-3 bg-slate-100 text-slate-700 font-black uppercase rounded-2xl hover:bg-slate-200 transition">CANCEL</button>
+                            <button type="submit" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-emerald-600/30 transition">
+                                <i class="fa-solid fa-check mr-2"></i> ENROLL & VERIFY MEMBER
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     VIEW 2.2: FULL PAGE CUSTOMER KYC & DOCUMENT UPLOAD (NO POPUP)
+                ══════════════════════════════════════════════════ -->
+                <div id="view-customer-documents" class="tab-view space-y-6 hidden">
+                    <!-- Top Bar with Back button and Actions -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="switchTab('customers')" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition cursor-pointer">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">MEMBER KYC & DOCUMENTATION</h3>
+                                    <span id="docCustKycBadge" class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">PENDING KYC</span>
+                                </div>
+                                <p class="text-xs font-bold text-slate-400 uppercase">UPLOAD AADHAAR, PAN, PHOTO & VERIFY MEMBER ELIGIBILITY</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="switchTab('customers')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider rounded-2xl transition cursor-pointer">
+                                <i class="fa-solid fa-users mr-1.5"></i> DIRECTORY
+                            </button>
+                            <button id="btnVerifyCustomerKycAction" onclick="submitVerifyCurrentCustomer()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-md transition flex items-center cursor-pointer">
+                                <i class="fa-solid fa-circle-check mr-1.5 text-sm"></i> APPROVE & VERIFY KYC
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Customer Profile Banner Card -->
+                    <div class="bg-white rounded-3xl p-6 border-2 border-slate-200/90 shadow-md">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b-2 border-slate-100 pb-5">
+                            <div class="flex items-center gap-4">
+                                <div id="docCustAvatar" class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-xl shadow-md flex-shrink-0">
+                                    M
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h2 id="docCustName" class="text-lg font-black text-slate-900 uppercase">MEMBER NAME</h2>
+                                        <span id="docCustCode" class="text-xs font-mono font-black text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded-xl border border-blue-200">CUST-0000</span>
+                                    </div>
+                                    <p id="docCustGuardian" class="text-xs font-bold text-slate-500 uppercase mt-0.5">SPOUSE / FATHER: --</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                <div class="p-2.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <span class="text-[9px] font-black uppercase text-slate-400 block">CONTACT</span>
+                                    <span id="docCustPhone" class="font-mono font-bold text-slate-800">--</span>
+                                </div>
+                                <div class="p-2.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <span class="text-[9px] font-black uppercase text-slate-400 block">BRANCH</span>
+                                    <span id="docCustBranch" class="font-bold text-slate-800 uppercase">--</span>
+                                </div>
+                                <div class="p-2.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <span class="text-[9px] font-black uppercase text-slate-400 block">CENTER & GROUP</span>
+                                    <span id="docCustCenter" class="font-bold text-slate-800 uppercase">--</span>
+                                </div>
+                                <div class="p-2.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <span class="text-[9px] font-black uppercase text-slate-400 block">AADHAAR NO</span>
+                                    <span id="docCustAadhaar" class="font-mono font-black text-slate-800">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Upload Grid -->
+                        <div class="mt-6">
+                            <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-blue-600"></i> KYC IDENTITY & VERIFICATION DOCUMENTS
+                            </h4>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                                <!-- 1. Aadhaar Card (Front) -->
+                                <div class="bg-slate-50/70 p-5 rounded-2xl border-2 border-slate-200 flex flex-col justify-between space-y-3">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-black uppercase text-slate-900 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-id-card text-blue-600"></i> AADHAAR (FRONT)
+                                            </span>
+                                            <span id="docStatusAadhaarFront" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">MISSING</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Front photo showing full name, DOB, and photo</p>
+                                        <div id="previewAadhaarFront" class="w-full h-36 mt-3 bg-white rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-2 overflow-hidden">
+                                            <i class="fa-solid fa-image text-2xl text-slate-300 mb-1"></i>
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase">NO FILE SELECTED</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 pt-2 border-t border-slate-200">
+                                        <input type="file" id="fileAadhaarFront" accept="image/*,application/pdf" class="text-xs w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onchange="previewSelectedDoc('fileAadhaarFront', 'previewAadhaarFront')" />
+                                        <button onclick="handleDocUpload('aadhaar_front', 'fileAadhaarFront')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD FRONT
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Aadhaar Card (Back) -->
+                                <div class="bg-slate-50/70 p-5 rounded-2xl border-2 border-slate-200 flex flex-col justify-between space-y-3">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-black uppercase text-slate-900 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-id-card text-blue-600"></i> AADHAAR (BACK)
+                                            </span>
+                                            <span id="docStatusAadhaarBack" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">MISSING</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Back photo showing address and barcode</p>
+                                        <div id="previewAadhaarBack" class="w-full h-36 mt-3 bg-white rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-2 overflow-hidden">
+                                            <i class="fa-solid fa-image text-2xl text-slate-300 mb-1"></i>
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase">NO FILE SELECTED</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 pt-2 border-t border-slate-200">
+                                        <input type="file" id="fileAadhaarBack" accept="image/*,application/pdf" class="text-xs w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onchange="previewSelectedDoc('fileAadhaarBack', 'previewAadhaarBack')" />
+                                        <button onclick="handleDocUpload('aadhaar_back', 'fileAadhaarBack')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD BACK
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 3. PAN Card or Voter Card -->
+                                <div class="bg-slate-50/70 p-5 rounded-2xl border-2 border-slate-200 flex flex-col justify-between space-y-3">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-black uppercase text-slate-900 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-credit-card text-purple-600"></i> PAN / VOTER ID
+                                            </span>
+                                            <span id="docStatusPan" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">MISSING</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Income Tax PAN or Election Voter card</p>
+                                        <div class="mt-2">
+                                            <input type="text" id="docPanNumberInput" placeholder="ENTER PAN / VOTER NUMBER" class="w-full px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold uppercase" />
+                                        </div>
+                                        <div id="previewPan" class="w-full h-24 mt-2 bg-white rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-2 overflow-hidden">
+                                            <i class="fa-solid fa-image text-xl text-slate-300 mb-1"></i>
+                                            <span class="text-[9px] font-bold text-slate-400 uppercase">NO FILE SELECTED</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 pt-2 border-t border-slate-200">
+                                        <input type="file" id="filePan" accept="image/*,application/pdf" class="text-xs w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer" onchange="previewSelectedDoc('filePan', 'previewPan')" />
+                                        <button onclick="handleDocUpload('pan', 'filePan', 'docPanNumberInput')" class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD PAN / VOTER
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- 4. Member Photo -->
+                                <div class="bg-slate-50/70 p-5 rounded-2xl border-2 border-slate-200 flex flex-col justify-between space-y-3">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs font-black uppercase text-slate-900 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-camera text-emerald-600"></i> MEMBER PHOTO
+                                            </span>
+                                            <span id="docStatusPhoto" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">MISSING</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">Clear face passport photo of borrower</p>
+                                        <div id="previewPhoto" class="w-full h-36 mt-3 bg-white rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-2 overflow-hidden">
+                                            <i class="fa-solid fa-user text-2xl text-slate-300 mb-1"></i>
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase">NO PHOTO</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 pt-2 border-t border-slate-200">
+                                        <input type="file" id="filePhoto" accept="image/*" class="text-xs w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer" onchange="previewSelectedDoc('filePhoto', 'previewPhoto')" />
+                                        <button onclick="handleDocUpload('photo', 'filePhoto')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD PHOTO
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Verification Checklist & Action Footer -->
+                        <div class="mt-8 p-5 bg-emerald-50/60 rounded-2xl border-2 border-emerald-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div class="space-y-1">
+                                <h5 class="text-xs font-black text-emerald-950 uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-shield-halved text-emerald-600 text-sm"></i> OFFICER KYC VERIFICATION CHECKLIST
+                                </h5>
+                                <p class="text-[11px] font-bold text-emerald-800 uppercase">
+                                    Confirm that borrower identity, biometric photo, Aadhaar card, and address details match physical documents.
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="toggleCustomerKycStatus(false)" class="px-4 py-2.5 bg-white text-slate-700 border-2 border-slate-300 hover:bg-slate-100 text-xs font-black uppercase rounded-xl transition cursor-pointer">
+                                    MARK PENDING
+                                </button>
+                                <button onclick="toggleCustomerKycStatus(true)" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-check-double text-sm"></i> APPROVE & VERIFY KYC
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- VIEW 3: CENTERS & JLG GROUPS -->
                 <div id="view-centers" class="tab-view space-y-6 hidden">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">Centers & JLG Group Management</h3>
-                            <p class="text-xs text-slate-500">Joint Liability Groups, center meetings, and field operations</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="openCreateCenterModal()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow transition">
-                                <i class="fa-solid fa-plus mr-1"></i> New Center
-                            </button>
-                            <button onclick="openCreateGroupModal()" class="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition">
-                                <i class="fa-solid fa-plus mr-1"></i> New JLG Group
-                            </button>
+                            <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">CENTERS & JLG GROUP OPERATIONS</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase">WEEKLY MEETING DAYS, FIELD LOCATIONS, AND 5-MEMBER GROUPS</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Centers List -->
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
-                            <h4 class="font-bold text-slate-900 text-sm flex items-center justify-between">
-                                <span><i class="fa-solid fa-people-roof text-brand-600 mr-2"></i>Active Centers</span>
-                                <span id="centerCountBadge" class="text-xs bg-brand-50 text-brand-700 px-2.5 py-0.5 rounded-full font-bold">0 Centers</span>
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md p-6 space-y-4">
+                            <h4 class="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center justify-between">
+                                <span><i class="fa-solid fa-people-roof text-emerald-600 mr-2"></i>OPERATIONAL CENTERS</span>
+                                <span id="centerCountBadge" class="bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full font-black text-[11px] border border-emerald-200">0 CENTERS</span>
                             </h4>
                             <div id="centersListContainer" class="space-y-3 max-h-96 overflow-y-auto">
-                                <p class="text-slate-400 text-xs text-center py-6">Loading centers...</p>
+                                <p class="text-slate-400 text-xs font-black uppercase text-center py-6">Loading centers...</p>
                             </div>
                         </div>
 
                         <!-- Groups List -->
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
-                            <h4 class="font-bold text-slate-900 text-sm flex items-center justify-between">
-                                <span><i class="fa-solid fa-users text-blue-600 mr-2"></i>JLG Groups (5-Member Model)</span>
-                                <span id="groupCountBadge" class="text-xs bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full font-bold">0 Groups</span>
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md p-6 space-y-4">
+                            <h4 class="font-black text-slate-900 text-xs uppercase tracking-wider flex items-center justify-between">
+                                <span><i class="fa-solid fa-users text-blue-600 mr-2"></i>JLG GROUPS (JOINT LIABILITY)</span>
+                                <span id="groupCountBadge" class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full font-black text-[11px] border border-blue-200">0 GROUPS</span>
                             </h4>
                             <div id="groupsListContainer" class="space-y-3 max-h-96 overflow-y-auto">
-                                <p class="text-slate-400 text-xs text-center py-6">Loading groups...</p>
+                                <p class="text-slate-400 text-xs font-black uppercase text-center py-6">Loading groups...</p>
                             </div>
                         </div>
                     </div>
@@ -436,17 +1134,14 @@
 
                 <!-- VIEW 4: LOAN MANAGEMENT -->
                 <div id="view-loans" class="tab-view space-y-6 hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">Loan Lifecycle Management</h3>
-                            <p class="text-xs text-slate-500">Schemes, applications, verification, disbursement, and EMI schedule</p>
+                            <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">LOAN LIFECYCLE & DISBURSEMENT PORTFOLIO</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase">SCHEMES, APPLICATIONS, DISBURSEMENT & PASSBOOK SCHEDULE</p>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button onclick="openEmiCalculatorModal()" class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl border border-indigo-200 transition">
-                                <i class="fa-solid fa-calculator mr-1.5"></i> EMI Calculator
-                            </button>
-                            <button onclick="openApplyLoanModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition">
-                                <i class="fa-solid fa-plus mr-1.5"></i> Apply Loan
+                            <button onclick="showApplyLoanPage()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-md transition">
+                                <i class="fa-solid fa-plus mr-1.5"></i> + APPLY NEW LOAN
                             </button>
                         </div>
                     </div>
@@ -457,34 +1152,34 @@
                     </div>
 
                     <!-- Loans Filter Bar -->
-                    <div class="flex items-center space-x-2 border-b border-slate-200 pb-2">
-                        <button onclick="filterLoansByStatus('')" class="loan-filter-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-brand-600 text-white">All Loans</button>
-                        <button onclick="filterLoansByStatus('Applied')" class="loan-filter-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Applied (Pending)</button>
-                        <button onclick="filterLoansByStatus('Approved')" class="loan-filter-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Approved</button>
-                        <button onclick="filterLoansByStatus('Active')" class="loan-filter-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Active (Disbursed)</button>
-                        <button onclick="filterLoansByStatus('Closed')" class="loan-filter-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Closed</button>
+                    <div class="flex items-center space-x-2 border-b-2 border-slate-200 pb-2 uppercase font-black text-xs">
+                        <button onclick="filterLoansByStatus('')" class="loan-filter-btn px-3 py-1.5 rounded-xl bg-emerald-600 text-white">ALL LOANS</button>
+                        <button onclick="filterLoansByStatus('Applied')" class="loan-filter-btn px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">APPLIED (PENDING)</button>
+                        <button onclick="filterLoansByStatus('Approved')" class="loan-filter-btn px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">APPROVED</button>
+                        <button onclick="filterLoansByStatus('Active')" class="loan-filter-btn px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">ACTIVE (DISBURSED)</button>
+                        <button onclick="filterLoansByStatus('Closed')" class="loan-filter-btn px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">CLOSED</button>
                     </div>
 
                     <!-- Loans Table -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                        <th class="py-3.5 px-4">Loan Account #</th>
-                                        <th class="py-3.5 px-4">Borrower & Phone</th>
-                                        <th class="py-3.5 px-4">Scheme & Type</th>
-                                        <th class="py-3.5 px-4 text-right">Disbursed / Approved</th>
-                                        <th class="py-3.5 px-4 text-right">Total Payable</th>
-                                        <th class="py-3.5 px-4 text-right">Total Paid</th>
-                                        <th class="py-3.5 px-4 text-right">Outstanding</th>
-                                        <th class="py-3.5 px-4 text-center">Status</th>
-                                        <th class="py-3.5 px-4 text-right">Actions</th>
+                                    <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                        <th class="py-3.5 px-4">LOAN ACCOUNT #</th>
+                                        <th class="py-3.5 px-4">BORROWER & PHONE</th>
+                                        <th class="py-3.5 px-4">SCHEME & TYPE</th>
+                                        <th class="py-3.5 px-4 text-right">DISBURSED / SANCTIONED</th>
+                                        <th class="py-3.5 px-4 text-right">TOTAL PAYABLE</th>
+                                        <th class="py-3.5 px-4 text-right">TOTAL PAID</th>
+                                        <th class="py-3.5 px-4 text-right">OUTSTANDING</th>
+                                        <th class="py-3.5 px-4 text-center">STATUS</th>
+                                        <th class="py-3.5 px-4 text-right">ACTIONS</th>
                                     </tr>
                                 </thead>
-                                <tbody id="loansTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tbody id="loansTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                     <tr>
-                                        <td colspan="9" class="text-center py-8 text-slate-400">Loading loan applications...</td>
+                                        <td colspan="9" class="text-center py-8 text-slate-400 uppercase font-black">Loading loan records...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -492,87 +1187,247 @@
                     </div>
                 </div>
 
-                <!-- VIEW 5: FIELD COLLECTION SHEET -->
-                <div id="view-collections" class="tab-view space-y-6 hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Field Collection Sheet & Batch Collections</h3>
-                            <p class="text-xs text-slate-500">Center weekly/daily collection sheet for field officers with 1-click batch submit</p>
+                <!-- VIEW 4.1: FULL PAGE DEDICATED LOAN APPLICATION SCREEN (NO POPUP) -->
+                <div id="view-loan-apply" class="tab-view space-y-6 hidden">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-emerald-100 shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="switchTab('loans')" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">CREATE NEW LOAN APPLICATION</h3>
+                                <p class="text-xs font-bold text-slate-400 uppercase">SELECT MEMBER, LOAN SCHEME, PRINCIPAL AMOUNT, AND CALCULATE EMI</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('loans')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase tracking-wider rounded-2xl transition">
+                            BACK TO LOANS
+                        </button>
+                    </div>
+
+                    <form id="formApplyLoanPage" onsubmit="event.preventDefault(); submitApplyLoan();" class="bg-white rounded-3xl p-8 border-2 border-slate-200/90 shadow-md space-y-6 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 font-bold">
+                            <div>
+                                <label class="block text-slate-600 uppercase tracking-wider mb-1">SELECT MEMBER (BORROWER) *</label>
+                                <select id="applyLoanCustomerSelect" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl font-black text-sm uppercase">
+                                    <!-- populated via JS -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 uppercase tracking-wider mb-1">LOAN SCHEME / PRODUCT *</label>
+                                <select id="applyLoanSchemeSelect" onchange="onSchemeChange()" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl font-black text-sm uppercase">
+                                    <!-- populated via JS -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 uppercase tracking-wider mb-1">REQUESTED PRINCIPAL AMOUNT (â‚¹) *</label>
+                                <input id="applyLoanAmount" type="number" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl font-mono font-black text-base" placeholder="â‚¹30,000" />
+                            </div>
+
+                            <div>
+                                <label class="block text-slate-600 uppercase tracking-wider mb-1">TENURE (MONTHS) *</label>
+                                <input id="applyLoanTenure" type="number" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl font-mono font-black text-base" value="12" />
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                <label class="block text-slate-600 uppercase tracking-wider mb-1">PURPOSE OF LOAN *</label>
+                                <input id="applyLoanPurpose" type="text" required class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl uppercase font-black" placeholder="e.g. Small tailoring business expansion, buffalo purchase" />
+                            </div>
+                        </div>
+
+                        <div class="p-5 bg-emerald-50 rounded-2xl border-2 border-emerald-200 text-emerald-900 space-y-1">
+                            <p class="font-black uppercase tracking-wider flex items-center text-xs">
+                                <i class="fa-solid fa-circle-info text-emerald-700 mr-2 text-sm"></i> LOAN REPAYMENT TERMS & SCHEDULE DETAILS
+                            </p>
+                            <p id="applyLoanSchemePreview" class="text-xs font-bold text-emerald-800 uppercase">Rate: 18% p.a. | Flat Method | 52 Weekly Installments</p>
+                        </div>
+
+                        <div class="flex items-center justify-end space-x-3 pt-4 border-t-2 border-slate-100">
+                            <button type="button" onclick="switchTab('loans')" class="px-5 py-3 bg-slate-100 text-slate-700 font-black uppercase rounded-2xl hover:bg-slate-200 transition">CANCEL</button>
+                            <button type="submit" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-emerald-600/30 transition">
+                                <i class="fa-solid fa-paper-plane mr-2"></i> SUBMIT LOAN APPLICATION
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- VIEW 4.2: FULL PAGE PASSBOOK & REPAYMENT SCHEDULE SCREEN (NO POPUP) -->
+                <div id="view-loan-schedule" class="tab-view space-y-6 hidden">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-emerald-100 shadow-sm">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="switchTab('loans')" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div>
+                                <h3 id="scheduleLoanTitle" class="text-base font-black text-slate-900 uppercase tracking-wider">OFFICIAL LOAN PASSBOOK & REPAYMENT SCHEDULE</h3>
+                                <p id="scheduleLoanSubtitle" class="text-xs font-bold text-slate-400 uppercase">LOAN #</p>
+                            </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <select id="sheetCenterSelector" onchange="loadCollectionSheet()" class="text-xs bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold shadow-sm focus:outline-none">
-                                <option value="">Select Center...</option>
+                            <button onclick="window.print()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-black uppercase transition flex items-center">
+                                <i class="fa-solid fa-print mr-1.5"></i> PRINT PASSBOOK
+                            </button>
+                            <button onclick="switchTab('loans')" class="px-4 py-2.5 bg-emerald-600 text-white rounded-2xl text-xs font-black uppercase transition">
+                                BACK TO LOANS
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                    <th class="py-3 px-4">INSTALLMENT #</th>
+                                    <th class="py-3 px-4">DUE DATE</th>
+                                    <th class="py-3 px-4 text-right">PRINCIPAL (â‚¹)</th>
+                                    <th class="py-3 px-4 text-right">INTEREST (â‚¹)</th>
+                                    <th class="py-3 px-4 text-right font-black">TOTAL EMI (â‚¹)</th>
+                                    <th class="py-3 px-4 text-right">TOTAL PAID (â‚¹)</th>
+                                    <th class="py-3 px-4 text-right">OUTSTANDING (â‚¹)</th>
+                                    <th class="py-3 px-4 text-center">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleTableBody" class="divide-y divide-slate-100 text-slate-700 font-bold">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VIEW 5: FIELD COLLECTION SHEET -->
+                <div id="view-collections" class="tab-view space-y-6 hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
+                        <div>
+                            <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">FIELD COLLECTION SHEET & BATCH COLLECTIONS</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase">FIELD OFFICER WEEKLY COLLECTION SHEET WITH 1-CLICK BATCH SUBMISSION</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select id="sheetCenterSelector" onchange="loadCollectionSheet()" class="text-xs bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-2.5 font-black uppercase shadow-xs focus:outline-none">
+                                <option value="">SELECT CENTER...</option>
                             </select>
-                            <input type="date" id="sheetDateInput" onchange="loadCollectionSheet()" class="text-xs bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold shadow-sm focus:outline-none" />
-                            <button onclick="submitBatchCollection()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center">
-                                <i class="fa-solid fa-check-double mr-1.5"></i> Submit Batch Collection
+                            <input type="date" id="sheetDateInput" onchange="loadCollectionSheet()" class="text-xs bg-slate-50 border-2 border-slate-200 rounded-2xl px-4 py-2.5 font-bold shadow-xs focus:outline-none" />
+                            <button onclick="submitBatchCollection()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider rounded-2xl shadow-md transition flex items-center">
+                                <i class="fa-solid fa-check-double mr-1.5"></i> SUBMIT BATCH COLLECTION
                             </button>
                         </div>
                     </div>
 
                     <!-- Collection Sheet Table -->
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                        <th class="py-3.5 px-4">Loan Account #</th>
-                                        <th class="py-3.5 px-4">Customer Name</th>
-                                        <th class="py-3.5 px-4">Group</th>
-                                        <th class="py-3.5 px-4 text-right">Due EMI Amount</th>
-                                        <th class="py-3.5 px-4 text-right">Overdue</th>
-                                        <th class="py-3.5 px-4 text-right font-bold text-slate-800">Total Due</th>
-                                        <th class="py-3.5 px-4 text-center">Collection Amount</th>
-                                        <th class="py-3.5 px-4 text-center">Savings Deposit</th>
-                                        <th class="py-3.5 px-4 text-center">Mode</th>
-                                        <th class="py-3.5 px-4 text-right">Receipt</th>
+                                    <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                        <th class="py-3.5 px-4">LOAN ACCOUNT #</th>
+                                        <th class="py-3.5 px-4">MEMBER NAME</th>
+                                        <th class="py-3.5 px-4">GROUP</th>
+                                        <th class="py-3.5 px-4 text-right">DUE EMI</th>
+                                        <th class="py-3.5 px-4 text-right">OVERDUE</th>
+                                        <th class="py-3.5 px-4 text-right font-black text-slate-900">TOTAL DUE</th>
+                                        <th class="py-3.5 px-4 text-center">COLLECTED AMOUNT (â‚¹)</th>
+                                        <th class="py-3.5 px-4 text-center">SAVINGS (â‚¹)</th>
+                                        <th class="py-3.5 px-4 text-center">MODE</th>
+                                        <th class="py-3.5 px-4 text-right">ACTION</th>
                                     </tr>
                                 </thead>
-                                <tbody id="collectionSheetBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tbody id="collectionSheetBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                     <tr>
-                                        <td colspan="10" class="text-center py-8 text-slate-400">Please select a Center to generate its collection sheet.</td>
+                                        <td colspan="10" class="text-center py-8 text-slate-400 uppercase font-black">Please select an operational Center to generate its collection sheet.</td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 5.1: FULL PAGE DEDICATED RECEIPT VIEWER & PRINTER (NO POPUP) -->
+                <div id="view-receipt" class="tab-view space-y-6 hidden">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-emerald-100 shadow-sm no-print">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="switchTab('collections')" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-black text-sm transition">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div>
+                                <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">OFFICIAL MONEY RECEIPT</h3>
+                                <p class="text-xs font-bold text-slate-400 uppercase">OFFICIAL REPAYMENT VOUCHER FOR MEMBER</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-md transition flex items-center">
+                                <i class="fa-solid fa-print mr-2"></i> PRINT RECEIPT (THERMAL / A4)
+                            </button>
+                            <button onclick="switchTab('collections')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase rounded-2xl">
+                                CLOSE
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="max-w-md mx-auto bg-white rounded-3xl p-8 border-2 border-slate-300 shadow-lg text-xs font-mono space-y-4">
+                        <div class="text-center border-b-2 border-dashed border-slate-300 pb-4">
+                            <h4 class="font-black text-base text-slate-900 uppercase">RPS RAYHAN TECH</h4>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold">ENTERPRISE MICROFINANCE ERP</p>
+                            <p id="receiptBranchName" class="text-xs text-slate-700 font-black uppercase mt-1">HEAD OFFICE BRANCH</p>
+                            <p class="text-[10px] text-slate-400 font-bold">GSTIN: 19AABCR1234F1Z5</p>
+                        </div>
+
+                        <div class="space-y-1.5 text-xs text-slate-800 font-bold">
+                            <div class="flex justify-between"><span class="text-slate-500 uppercase">RECEIPT NO:</span><span id="rcpNumber" class="font-black font-mono">RCP-0001</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500 uppercase">DATE & TIME:</span><span id="rcpDate">--</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500 uppercase">MEMBER:</span><span id="rcpCustomer" class="font-black uppercase">--</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500 uppercase">LOAN NO:</span><span id="rcpLoanNo" class="font-black">--</span></div>
+                            <div class="flex justify-between"><span class="text-slate-500 uppercase">PAYMENT MODE:</span><span id="rcpMode" class="uppercase">CASH</span></div>
+                        </div>
+
+                        <div class="border-t-2 border-b-2 border-dashed border-slate-300 py-3 space-y-1">
+                            <div class="flex justify-between font-black text-slate-900 text-base">
+                                <span class="uppercase">AMOUNT RECEIVED:</span>
+                                <span id="rcpAmount" class="font-mono text-emerald-700">â‚¹0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-500 font-bold">
+                                <span class="uppercase">Principal Repaid:</span>
+                                <span id="rcpPrincipal">â‚¹0.00</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-500 font-bold">
+                                <span class="uppercase">Interest:</span>
+                                <span id="rcpInterest">â‚¹0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-[10px] text-slate-500 pt-1 space-y-1 font-bold uppercase">
+                            <p>Thank you for timely repayment!</p>
+                            <p>Customer Helpline: +91 98765 43210</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- VIEW 6: SAVINGS & DEPOSITS -->
                 <div id="view-savings" class="tab-view space-y-6 hidden">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">Member Savings & Deposits (Daily / RD / FD)</h3>
-                            <p class="text-xs text-slate-500">Savings schemes, accounts, deposits, withdrawals, and passbook</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="openSavingsTrxModal()" class="px-3.5 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 text-xs font-bold rounded-xl shadow-sm transition">
-                                <i class="fa-solid fa-money-bill-transfer mr-1"></i> Deposit / Withdraw
-                            </button>
-                            <button onclick="openOpenSavingsAccountModal()" class="px-3.5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition">
-                                <i class="fa-solid fa-plus mr-1"></i> Open Savings Account
-                            </button>
+                            <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">MEMBER SAVINGS & RECURRING DEPOSITS (RD / FD)</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase">SAVINGS SCHEMES, ACCOUNTS, DEPOSITS, WITHDRAWALS, AND PASSBOOK</p>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                        <th class="py-3.5 px-4">Account Number</th>
-                                        <th class="py-3.5 px-4">Customer Name</th>
-                                        <th class="py-3.5 px-4">Savings Scheme</th>
-                                        <th class="py-3.5 px-4 text-right">Current Balance</th>
-                                        <th class="py-3.5 px-4 text-right">Total Deposited</th>
-                                        <th class="py-3.5 px-4 text-right">Total Withdrawn</th>
-                                        <th class="py-3.5 px-4 text-center">Status</th>
-                                        <th class="py-3.5 px-4 text-right">Opened Date</th>
+                                    <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                        <th class="py-3.5 px-4">ACCOUNT NUMBER</th>
+                                        <th class="py-3.5 px-4">MEMBER NAME</th>
+                                        <th class="py-3.5 px-4">SAVINGS SCHEME</th>
+                                        <th class="py-3.5 px-4 text-right">CURRENT BALANCE (â‚¹)</th>
+                                        <th class="py-3.5 px-4 text-right">TOTAL DEPOSITED (â‚¹)</th>
+                                        <th class="py-3.5 px-4 text-right">TOTAL WITHDRAWN (â‚¹)</th>
+                                        <th class="py-3.5 px-4 text-center">STATUS</th>
+                                        <th class="py-3.5 px-4 text-right">OPENED DATE</th>
                                     </tr>
                                 </thead>
-                                <tbody id="savingsTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tbody id="savingsTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                     <tr>
-                                        <td colspan="8" class="text-center py-8 text-slate-400">Loading savings accounts...</td>
+                                        <td colspan="8" class="text-center py-8 text-slate-400 uppercase font-black">Loading savings accounts...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -582,40 +1437,35 @@
 
                 <!-- VIEW 7: DOUBLE-ENTRY ACCOUNTING -->
                 <div id="view-accounting" class="tab-view space-y-6 hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">Double-Entry Financial Accounting</h3>
-                            <p class="text-xs text-slate-500">Chart of accounts, general ledger, trial balance, P&L, balance sheet</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="openCreateVoucherModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow transition">
-                                <i class="fa-solid fa-plus mr-1.5"></i> Create Journal Voucher
-                            </button>
+                            <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">DOUBLE-ENTRY GENERAL LEDGER ACCOUNTING</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase">CHART OF ACCOUNTS, TRIAL BALANCE, PROFIT & LOSS, BALANCE SHEET</p>
                         </div>
                     </div>
 
                     <!-- Accounting Sub-tabs -->
-                    <div class="flex items-center space-x-2 border-b border-slate-200 pb-2">
-                        <button onclick="switchAccountingTab('coa')" id="acc-tab-coa" class="acc-sub-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-900 text-white">Chart of Accounts</button>
-                        <button onclick="switchAccountingTab('trial')" id="acc-tab-trial" class="acc-sub-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Trial Balance</button>
-                        <button onclick="switchAccountingTab('pl')" id="acc-tab-pl" class="acc-sub-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Profit & Loss</button>
-                        <button onclick="switchAccountingTab('bs')" id="acc-tab-bs" class="acc-sub-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Balance Sheet</button>
-                        <button onclick="switchAccountingTab('vouchers')" id="acc-tab-vouchers" class="acc-sub-btn px-3 py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:bg-slate-100">Voucher Journal</button>
+                    <div class="flex items-center space-x-2 border-b-2 border-slate-200 pb-2 uppercase font-black text-xs">
+                        <button onclick="switchAccountingTab('coa')" id="acc-tab-coa" class="acc-sub-btn px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white">CHART OF ACCOUNTS</button>
+                        <button onclick="switchAccountingTab('trial')" id="acc-tab-trial" class="acc-sub-btn px-3.5 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">TRIAL BALANCE</button>
+                        <button onclick="switchAccountingTab('pl')" id="acc-tab-pl" class="acc-sub-btn px-3.5 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">PROFIT & LOSS</button>
+                        <button onclick="switchAccountingTab('bs')" id="acc-tab-bs" class="acc-sub-btn px-3.5 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">BALANCE SHEET</button>
+                        <button onclick="switchAccountingTab('vouchers')" id="acc-tab-vouchers" class="acc-sub-btn px-3.5 py-1.5 rounded-xl text-slate-600 hover:bg-slate-200">VOUCHER JOURNAL</button>
                     </div>
 
                     <!-- Sub-view: COA -->
                     <div id="acc-view-coa" class="acc-view space-y-4">
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                        <th class="py-3.5 px-4">Account Code</th>
-                                        <th class="py-3.5 px-4">Account Name</th>
-                                        <th class="py-3.5 px-4">Classification</th>
-                                        <th class="py-3.5 px-4 text-right">Current Ledger Balance</th>
+                                    <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                        <th class="py-3.5 px-4">ACCOUNT CODE</th>
+                                        <th class="py-3.5 px-4">ACCOUNT NAME</th>
+                                        <th class="py-3.5 px-4">CLASSIFICATION</th>
+                                        <th class="py-3.5 px-4 text-right">CURRENT LEDGER BALANCE (â‚¹)</th>
                                     </tr>
                                 </thead>
-                                <tbody id="coaTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                                <tbody id="coaTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                     <!-- populated via JS -->
                                 </tbody>
                             </table>
@@ -624,75 +1474,70 @@
 
                     <!-- Sub-view: Trial Balance -->
                     <div id="acc-view-trial" class="acc-view space-y-4 hidden">
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" id="trialBalanceContent">
-                            <p class="text-slate-400 text-center py-6">Loading trial balance...</p>
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md p-8" id="trialBalanceContent">
+                            <p class="text-slate-400 text-center py-6 font-black uppercase text-xs">Loading trial balance...</p>
                         </div>
                     </div>
 
                     <!-- Sub-view: Profit & Loss -->
                     <div id="acc-view-pl" class="acc-view space-y-4 hidden">
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" id="plContent">
-                            <p class="text-slate-400 text-center py-6">Loading profit & loss statement...</p>
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md p-8" id="plContent">
+                            <p class="text-slate-400 text-center py-6 font-black uppercase text-xs">Loading profit & loss statement...</p>
                         </div>
                     </div>
 
                     <!-- Sub-view: Balance Sheet -->
                     <div id="acc-view-bs" class="acc-view space-y-4 hidden">
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" id="bsContent">
-                            <p class="text-slate-400 text-center py-6">Loading balance sheet...</p>
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md p-8" id="bsContent">
+                            <p class="text-slate-400 text-center py-6 font-black uppercase text-xs">Loading balance sheet...</p>
                         </div>
                     </div>
 
                     <!-- Sub-view: Vouchers Journal -->
                     <div id="acc-view-vouchers" class="acc-view space-y-4 hidden">
-                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse text-xs">
-                                    <thead>
-                                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                            <th class="py-3.5 px-4">Voucher #</th>
-                                            <th class="py-3.5 px-4">Date</th>
-                                            <th class="py-3.5 px-4">Type</th>
-                                            <th class="py-3.5 px-4">Narration</th>
-                                            <th class="py-3.5 px-4 text-right">Amount</th>
-                                            <th class="py-3.5 px-4 text-center">Prepared By</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="vouchersTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
-                                        <!-- populated via JS -->
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                        <th class="py-3.5 px-4">VOUCHER #</th>
+                                        <th class="py-3.5 px-4">DATE</th>
+                                        <th class="py-3.5 px-4">TYPE</th>
+                                        <th class="py-3.5 px-4">NARRATION</th>
+                                        <th class="py-3.5 px-4 text-right">TOTAL AMOUNT (â‚¹)</th>
+                                        <th class="py-3.5 px-4 text-center">PREPARED BY</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vouchersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
+                                    <!-- populated via JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
                 <!-- VIEW 8: EXPENSES & INCOMES -->
                 <div id="view-expenses" class="tab-view space-y-6 hidden">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
                         <div>
-                            <h3 class="text-xl font-bold text-slate-900">Operating Expenses & Other Incomes</h3>
-                            <p class="text-xs text-slate-500">Rent, conveyance, stationery, utilities with auto double-entry posting</p>
+                            <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">OPERATIONAL EXPENSES & OFFICE BILLS</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase">RENT, UTILITIES, CONVEYANCE, IT WITH AUTO DOUBLE-ENTRY VOUCHER</p>
                         </div>
-                        <button onclick="openRecordExpenseModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition">
-                            <i class="fa-solid fa-plus mr-1.5"></i> Record Expense
-                        </button>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                         <table class="w-full text-left border-collapse text-xs">
                             <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                    <th class="py-3.5 px-4">Expense #</th>
-                                    <th class="py-3.5 px-4">Date</th>
-                                    <th class="py-3.5 px-4">Category</th>
-                                    <th class="py-3.5 px-4">Paid To</th>
-                                    <th class="py-3.5 px-4">Mode</th>
-                                    <th class="py-3.5 px-4 text-right">Amount</th>
-                                    <th class="py-3.5 px-4">Description</th>
+                                <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                    <th class="py-3.5 px-4">EXPENSE #</th>
+                                    <th class="py-3.5 px-4">DATE</th>
+                                    <th class="py-3.5 px-4">CATEGORY</th>
+                                    <th class="py-3.5 px-4">PAID TO</th>
+                                    <th class="py-3.5 px-4">MODE</th>
+                                    <th class="py-3.5 px-4 text-right">AMOUNT (â‚¹)</th>
+                                    <th class="py-3.5 px-4">DESCRIPTION</th>
                                 </tr>
                             </thead>
-                            <tbody id="expensesTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tbody id="expensesTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                 <!-- populated via JS -->
                             </tbody>
                         </table>
@@ -701,11 +1546,9 @@
 
                 <!-- VIEW 9: BRANCHES & COMPANY -->
                 <div id="view-branches" class="tab-view space-y-6 hidden">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Multi-Branch & Enterprise Hierarchy</h3>
-                            <p class="text-xs text-slate-500">Branches, areas, cash vaults, and head office controls</p>
-                        </div>
+                    <div class="bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
+                        <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">MULTI-BRANCH ENTERPRISE NETWORK</h3>
+                        <p class="text-xs font-bold text-slate-400 uppercase">HEAD OFFICE, REGIONAL HUBS, CASH VAULTS, AND BRANCH DETAILS</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="branchesCardsContainer">
@@ -715,26 +1558,24 @@
 
                 <!-- VIEW 10: STAFF & EMPLOYEES -->
                 <div id="view-employees" class="tab-view space-y-6 hidden">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">Staff, Field Officers & HR</h3>
-                            <p class="text-xs text-slate-500">Employee directory, branch assignments, designations, and roles</p>
-                        </div>
+                    <div class="bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
+                        <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">STAFF DIRECTORY & HUMAN RESOURCES</h3>
+                        <p class="text-xs font-bold text-slate-400 uppercase">BRANCH MANAGERS, FIELD OFFICERS, CASHIERS & RECOVERY AGENTS</p>
                     </div>
 
-                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-white rounded-3xl border-2 border-slate-200/90 shadow-md overflow-hidden">
                         <table class="w-full text-left border-collapse text-xs">
                             <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                                    <th class="py-3.5 px-4">Employee Code</th>
-                                    <th class="py-3.5 px-4">Name</th>
-                                    <th class="py-3.5 px-4">Designation & Role</th>
-                                    <th class="py-3.5 px-4">Branch</th>
-                                    <th class="py-3.5 px-4">Email & Phone</th>
-                                    <th class="py-3.5 px-4 text-right">Basic Salary</th>
+                                <tr class="bg-slate-50 border-b-2 border-slate-200 text-slate-600 uppercase tracking-wider font-black">
+                                    <th class="py-3.5 px-4">EMPLOYEE CODE</th>
+                                    <th class="py-3.5 px-4">FULL NAME</th>
+                                    <th class="py-3.5 px-4">DESIGNATION & ROLE</th>
+                                    <th class="py-3.5 px-4">ASSIGNED BRANCH</th>
+                                    <th class="py-3.5 px-4">EMAIL & PHONE</th>
+                                    <th class="py-3.5 px-4 text-right">BASIC SALARY (â‚¹)</th>
                                 </tr>
                             </thead>
-                            <tbody id="employeesTableBody" class="divide-y divide-slate-100 font-medium text-slate-700">
+                            <tbody id="employeesTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
                                 <!-- Populated via JS -->
                             </tbody>
                         </table>
@@ -743,335 +1584,52 @@
 
                 <!-- VIEW 11: REPORTS & AUDIT -->
                 <div id="view-reports" class="tab-view space-y-6 hidden">
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-900">Audit, Compliance & Financial Reports</h3>
-                        <p class="text-xs text-slate-500">Generate and export official audit statements, due sheets, and portfolios</p>
+                    <div class="bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
+                        <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">FINANCIAL AUDIT, COMPLIANCE & EXPORTS</h3>
+                        <p class="text-xs font-bold text-slate-400 uppercase">EXPORT COMPLETE AUDIT STATEMENTS, PORTFOLIO LEDGERS, AND OVERDUE LISTS</p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                            <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-lg">
+                        <div class="bg-white p-6 rounded-3xl border-2 border-emerald-100 shadow-md space-y-3">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl font-black border border-emerald-200">
                                 <i class="fa-solid fa-file-invoice"></i>
                             </div>
-                            <h4 class="font-bold text-slate-900 text-sm">Loan Portfolio Report</h4>
-                            <p class="text-xs text-slate-500">Complete listing of all disbursed loans with outstanding principal & interest.</p>
-                            <button onclick="exportLoanPortfolioCsv()" class="w-full py-2 bg-slate-100 hover:bg-brand-50 hover:text-brand-700 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition">
-                                <i class="fa-solid fa-file-csv mr-1"></i> Export to CSV
+                            <h4 class="font-black text-slate-900 text-sm uppercase">LOAN PORTFOLIO LEDGER</h4>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Complete listing of all active & closed loans with remaining principal & interest.</p>
+                            <button onclick="exportLoanPortfolioCsv()" class="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-black uppercase rounded-2xl border border-emerald-200 transition">
+                                <i class="fa-solid fa-file-csv mr-1.5"></i> EXPORT TO CSV
                             </button>
                         </div>
 
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                        <div class="bg-white p-6 rounded-3xl border-2 border-blue-100 shadow-md space-y-3">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl font-black border border-blue-200">
                                 <i class="fa-solid fa-calendar-check"></i>
                             </div>
-                            <h4 class="font-bold text-slate-900 text-sm">Daily Cashier Day Book</h4>
-                            <p class="text-xs text-slate-500">Daily chronological statement of cash collections, disbursements, and expenses.</p>
-                            <button onclick="window.print()" class="w-full py-2 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition">
-                                <i class="fa-solid fa-print mr-1"></i> Print Day Sheet
+                            <h4 class="font-black text-slate-900 text-sm uppercase">DAILY CASHIER DAY BOOK</h4>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Chronological cash book for all collections, disbursements, and expenses.</p>
+                            <button onclick="window.print()" class="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-black uppercase rounded-2xl border border-blue-200 transition">
+                                <i class="fa-solid fa-print mr-1.5"></i> PRINT DAY SHEET
                             </button>
                         </div>
 
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                        <div class="bg-white p-6 rounded-3xl border-2 border-rose-100 shadow-md space-y-3">
+                            <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center text-xl font-black border border-rose-200">
                                 <i class="fa-solid fa-clock-rotate-left"></i>
                             </div>
-                            <h4 class="font-bold text-slate-900 text-sm">Overdue & Default Aging</h4>
-                            <p class="text-xs text-slate-500">Delinquent borrowers past 30, 60, 90 days grace period for recovery team.</p>
-                            <button onclick="alert('Exporting overdue list...')" class="w-full py-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition">
-                                <i class="fa-solid fa-download mr-1"></i> Download Recovery List
+                            <h4 class="font-black text-slate-900 text-sm uppercase">DELINQUENT AGING REPORT</h4>
+                            <p class="text-xs font-bold text-slate-500 uppercase">Delinquent borrowers past 30, 60, 90 days grace period for recovery team.</p>
+                            <button onclick="alert('Exporting overdue list...')" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-black uppercase rounded-2xl border border-rose-200 transition">
+                                <i class="fa-solid fa-download mr-1.5"></i> DOWNLOAD RECOVERY LIST
                             </button>
                         </div>
                     </div>
                 </div>
+
             </main>
-        </div>
-    </div>
-
-    <!-- 3. MODALS (Customer Registration, Loan Application, Disbursement, EMI Schedule, Receipt, Expense) -->
-
-    <!-- Modal: Register Customer -->
-    <div id="modalRegisterCustomer" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden p-4 overflow-y-auto">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 border border-slate-100 my-8">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 class="font-bold text-base text-slate-900 flex items-center">
-                    <i class="fa-solid fa-user-plus text-brand-600 mr-2"></i> Register Member (KYC & Biometrics)
-                </h3>
-                <button onclick="closeModal('modalRegisterCustomer')" class="text-slate-400 hover:text-slate-600 text-sm p-1">
-                    <i class="fa-solid fa-xmark text-base"></i>
-                </button>
-            </div>
-
-            <form id="formRegisterCustomer" onsubmit="event.preventDefault(); submitRegisterCustomer();" class="space-y-4 pt-4 text-xs">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">First Name *</label>
-                        <input id="newCustFirstName" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="First Name" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Last Name *</label>
-                        <input id="newCustLastName" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Last Name" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Guardian Name (Spouse/Father) *</label>
-                        <input id="newCustGuardian" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Guardian Name" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Phone Number *</label>
-                        <input id="newCustPhone" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="10-digit mobile" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Date of Birth</label>
-                        <input id="newCustDob" type="date" value="1995-01-01" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Gender</label>
-                        <select id="newCustGender" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-                            <option value="2">Female</option>
-                            <option value="1">Male</option>
-                            <option value="3">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Center & Group</label>
-                        <select id="newCustCenter" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl">
-                            <!-- populated dynamically -->
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Occupation & Income</label>
-                        <input id="newCustOccupation" type="text" value="Dairy / Small Shop" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Occupation" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Aadhaar Card Number *</label>
-                        <input id="newCustAadhaar" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="12-digit Aadhaar" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">PAN / Voter ID (Optional)</label>
-                        <input id="newCustPan" type="text" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="PAN Number" />
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="block font-semibold text-slate-600 mb-1">Residential Address *</label>
-                        <input id="newCustAddress" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Full Address, Village, Pincode" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Nominee Name</label>
-                        <input id="newCustNominee" type="text" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Nominee Name" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Guarantor Name</label>
-                        <input id="newCustGuarantor" type="text" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Guarantor Name" />
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('modalRegisterCustomer')" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition">Save & Verify Member</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal: Apply Loan -->
-    <div id="modalApplyLoan" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-100">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                <h3 class="font-bold text-base text-slate-900 flex items-center">
-                    <i class="fa-solid fa-file-signature text-brand-600 mr-2"></i> New Loan Application
-                </h3>
-                <button onclick="closeModal('modalApplyLoan')" class="text-slate-400 hover:text-slate-600 p-1">
-                    <i class="fa-solid fa-xmark text-base"></i>
-                </button>
-            </div>
-
-            <form id="formApplyLoan" onsubmit="event.preventDefault(); submitApplyLoan();" class="space-y-4 pt-4 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Select Member (Borrower) *</label>
-                    <select id="applyLoanCustomerSelect" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        <!-- populated via JS -->
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Loan Scheme / Product *</label>
-                    <select id="applyLoanSchemeSelect" onchange="onSchemeChange()" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        <!-- populated via JS -->
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Requested Amount (₹) *</label>
-                        <input id="applyLoanAmount" type="number" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm" placeholder="₹30,000" />
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-slate-600 mb-1">Tenure (Months) *</label>
-                        <input id="applyLoanTenure" type="number" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm" value="12" />
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Purpose of Loan *</label>
-                    <input id="applyLoanPurpose" type="text" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="e.g. Small tailoring business, buffalo purchase" />
-                </div>
-
-                <div class="p-3 bg-brand-50/60 rounded-xl border border-brand-100 text-brand-900 space-y-1">
-                    <p class="font-bold flex items-center"><i class="fa-solid fa-circle-info text-brand-600 mr-1.5"></i> EMI Terms</p>
-                    <p id="applyLoanSchemePreview" class="text-[11px] text-brand-800">Select a scheme to view interest rate and frequency.</p>
-                </div>
-
-                <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeModal('modalApplyLoan')" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition">Submit Application</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal: Approve Loan -->
-    <div id="modalApproveLoan" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-slate-100">
-            <h3 class="font-bold text-base text-slate-900 mb-2">Approve Loan Application</h3>
-            <p id="approveLoanSubtitle" class="text-xs text-slate-500 mb-4">Loan Account: ...</p>
-            <input type="hidden" id="approveLoanId" />
-
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Approved Amount (₹)</label>
-                    <input id="approveLoanAmount" type="number" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm" />
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Approval Remarks</label>
-                    <input id="approveLoanRemarks" type="text" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" placeholder="Eligible per KYC and credit check" />
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2 mt-5">
-                <button onclick="closeModal('modalApproveLoan')" class="px-3 py-1.5 bg-slate-100 text-slate-700 font-semibold rounded-xl text-xs">Cancel</button>
-                <button onclick="confirmApproveLoan()" class="px-4 py-1.5 bg-brand-600 text-white font-bold rounded-xl text-xs">Confirm Approval</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Disburse Loan -->
-    <div id="modalDisburseLoan" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-slate-100">
-            <h3 class="font-bold text-base text-slate-900 mb-1">Disburse Loan</h3>
-            <p id="disburseLoanSubtitle" class="text-xs text-slate-500 mb-4">Auto-generates EMI schedule and ledger voucher.</p>
-            <input type="hidden" id="disburseLoanId" />
-
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Disbursement Amount (₹)</label>
-                    <input id="disburseLoanAmount" type="number" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm" />
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">Payment Mode</label>
-                    <select id="disburseLoanMode" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        <option value="1">Cash in Hand</option>
-                        <option value="2">Bank Account Transfer</option>
-                        <option value="4">UPI / Direct Debit</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-600 mb-1">First EMI Date</label>
-                    <input id="disburseFirstEmiDate" type="date" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl" />
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2 mt-5">
-                <button onclick="closeModal('modalDisburseLoan')" class="px-3 py-1.5 bg-slate-100 text-slate-700 font-semibold rounded-xl text-xs">Cancel</button>
-                <button onclick="confirmDisburseLoan()" class="px-4 py-1.5 bg-brand-600 text-white font-bold rounded-xl text-xs">Disburse & Post Voucher</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: View Loan Schedule / Passbook -->
-    <div id="modalLoanSchedule" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl p-6 border border-slate-100 flex flex-col max-h-[85vh]">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
-                <div>
-                    <h3 id="scheduleLoanTitle" class="font-bold text-base text-slate-900">Loan Repayment Passbook & EMI Schedule</h3>
-                    <p id="scheduleLoanSubtitle" class="text-xs text-slate-500">Loan #</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="window.print()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-200 transition">
-                        <i class="fa-solid fa-print mr-1"></i> Print Passbook
-                    </button>
-                    <button onclick="closeModal('modalLoanSchedule')" class="text-slate-400 hover:text-slate-600 p-1">
-                        <i class="fa-solid fa-xmark text-base"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex-1 overflow-y-auto mt-4">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead class="sticky top-0 bg-slate-50 border-b border-slate-200">
-                        <tr class="text-slate-500 uppercase font-semibold">
-                            <th class="py-2.5 px-3">#</th>
-                            <th class="py-2.5 px-3">Due Date</th>
-                            <th class="py-2.5 px-3 text-right">Principal</th>
-                            <th class="py-2.5 px-3 text-right">Interest</th>
-                            <th class="py-2.5 px-3 text-right font-bold">Total EMI</th>
-                            <th class="py-2.5 px-3 text-right">Paid</th>
-                            <th class="py-2.5 px-3 text-right">Outstanding</th>
-                            <th class="py-2.5 px-3 text-center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scheduleTableBody" class="divide-y divide-slate-100 text-slate-700 font-medium">
-                        <!-- populated via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Thermal / Standard Receipt Printing -->
-    <div id="modalReceipt" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs hidden p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-slate-100 text-xs font-mono space-y-4">
-            <div class="text-center border-b border-dashed border-slate-300 pb-3">
-                <h4 class="font-extrabold text-sm text-slate-900">RPS RAYHAN TECH</h4>
-                <p class="text-[10px] text-slate-500">Microfinance Services</p>
-                <p id="receiptBranchName" class="text-[10px] text-slate-600 font-bold">Head Office Branch</p>
-                <p class="text-[10px] text-slate-400">GST: 19AABCR1234F1Z5</p>
-            </div>
-
-            <div class="space-y-1 text-[11px] text-slate-700">
-                <div class="flex justify-between"><span class="text-slate-500">Receipt No:</span><span id="rcpNumber" class="font-bold">RCP-0001</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Date & Time:</span><span id="rcpDate">--</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Member:</span><span id="rcpCustomer" class="font-bold">--</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Loan No:</span><span id="rcpLoanNo">--</span></div>
-                <div class="flex justify-between"><span class="text-slate-500">Payment Mode:</span><span id="rcpMode">Cash</span></div>
-            </div>
-
-            <div class="border-t border-b border-dashed border-slate-300 py-2 space-y-1 text-[11px]">
-                <div class="flex justify-between font-bold text-slate-900 text-sm">
-                    <span>AMOUNT RECEIVED:</span>
-                    <span id="rcpAmount">₹0.00</span>
-                </div>
-                <div class="flex justify-between text-[10px] text-slate-500">
-                    <span>Principal Repaid:</span>
-                    <span id="rcpPrincipal">₹0.00</span>
-                </div>
-                <div class="flex justify-between text-[10px] text-slate-500">
-                    <span>Interest:</span>
-                    <span id="rcpInterest">₹0.00</span>
-                </div>
-            </div>
-
-            <div class="text-center text-[10px] text-slate-500 pt-1 space-y-1">
-                <p>Thank you for timely repayment!</p>
-                <p>Helpline: +91 98765 43210</p>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-2 border-t border-slate-100 font-sans">
-                <button onclick="closeModal('modalReceipt')" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">Close</button>
-                <button onclick="window.print()" class="px-4 py-1.5 bg-brand-600 text-white rounded-xl text-xs font-bold shadow"><i class="fa-solid fa-print mr-1"></i> Print Receipt</button>
-            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <!-- Full Microfinance ERP Client Script -->
     <script src="~/js/microfinance.js" asp-append-version="true"></script>
 }

@@ -25,7 +25,7 @@ public class DashboardController : ControllerBase
     public async Task<ActionResult<ApiResponse<DashboardSummaryDto>>> GetSummary([FromQuery] int? branchId)
     {
         // Enforce branch filter if user is restricted to a branch
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
         }
@@ -35,16 +35,34 @@ public class DashboardController : ControllerBase
         var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
 
         // 1. Collections query
-        var collectionsQuery = _db.LoanCollections.AsQueryable();
+        var collectionsQuery = _db.LoanCollections
+            .Include(c => c.Customer)
+                .ThenInclude(cust => cust!.Center)
+            .AsQueryable();
+
         if (branchId.HasValue) collectionsQuery = collectionsQuery.Where(c => c.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            collectionsQuery = collectionsQuery.Where(c => c.FieldOfficerId == _currentUser.EmployeeId.Value ||
+                (c.Customer != null && c.Customer.Center != null && c.Customer.Center.FieldOfficerId == _currentUser.EmployeeId.Value));
+        }
 
         var todayCollection = await collectionsQuery
             .Where(c => c.CollectionDate >= today && c.CollectionDate < tomorrow)
             .SumAsync(c => (decimal?)c.TotalAmountPaid) ?? 0;
 
         // 2. Disbursements query
-        var loansQuery = _db.LoanApplications.AsQueryable();
+        var loansQuery = _db.LoanApplications
+            .Include(l => l.Center)
+            .AsQueryable();
+
         if (branchId.HasValue) loansQuery = loansQuery.Where(l => l.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            loansQuery = loansQuery.Where(l => l.Center != null && l.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
 
         var todayDisbursement = await loansQuery
             .Where(l => l.DisbursedDate >= today && l.DisbursedDate < tomorrow && l.Status == LoanStatus.Active)
@@ -61,9 +79,15 @@ public class DashboardController : ControllerBase
         // 3. Due collection today & Overdue
         var emiQuery = _db.LoanEmiSchedules
             .Include(e => e.LoanApplication)
+                .ThenInclude(l => l!.Center)
             .AsQueryable();
 
         if (branchId.HasValue) emiQuery = emiQuery.Where(e => e.LoanApplication!.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            emiQuery = emiQuery.Where(e => e.LoanApplication != null && e.LoanApplication.Center != null && e.LoanApplication.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
 
         var dueCollectionToday = await emiQuery
             .Where(e => e.DueDate >= today && e.DueDate < tomorrow && e.Status != EmiStatus.Paid)
@@ -78,13 +102,32 @@ public class DashboardController : ControllerBase
         var overdueLoansCount = overdueEmis.Select(e => e.LoanApplicationId).Distinct().Count();
 
         // 4. Customers count
-        var custQuery = _db.Customers.AsQueryable();
+        var custQuery = _db.Customers
+            .Include(c => c.Center)
+            .AsQueryable();
+
         if (branchId.HasValue) custQuery = custQuery.Where(c => c.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            custQuery = custQuery.Where(c => c.Center != null && c.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
+
         var totalCustomers = await custQuery.CountAsync();
 
         // 5. Savings
-        var savQuery = _db.SavingsAccounts.AsQueryable();
+        var savQuery = _db.SavingsAccounts
+            .Include(s => s.Customer)
+                .ThenInclude(c => c!.Center)
+            .AsQueryable();
+
         if (branchId.HasValue) savQuery = savQuery.Where(s => s.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            savQuery = savQuery.Where(s => s.Customer != null && s.Customer.Center != null && s.Customer.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
+
         var totalSavings = await savQuery.SumAsync(s => (decimal?)s.CurrentBalance) ?? 0;
 
         // 6. Cash and Bank Balances
@@ -136,7 +179,12 @@ public class DashboardController : ControllerBase
         }
 
         // 9. Branch Performances
-        var allBranches = await _db.Branches.ToListAsync();
+        var allBranchesQuery = _db.Branches.AsQueryable();
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
+        {
+            allBranchesQuery = allBranchesQuery.Where(b => b.Id == _currentUser.BranchId.Value);
+        }
+        var allBranches = await allBranchesQuery.ToListAsync();
         var branchPerformances = new List<BranchPerformanceDto>();
 
         foreach (var b in allBranches)
@@ -175,5 +223,36 @@ public class DashboardController : ControllerBase
         };
 
         return Ok(ApiResponse<DashboardSummaryDto>.Ok(result));
+    }
+
+    [HttpPost("reset-dummy-data")]
+    public async Task<ActionResult<ApiResponse<bool>>> ClearDummyData()
+    {
+        if (!_currentUser.IsAdminOrSuperAdmin)
+        {
+            return Forbid();
+        }
+
+        // Remove sample operational transactions and customers
+        _db.LoanCollections.RemoveRange(_db.LoanCollections);
+        _db.LoanEmiSchedules.RemoveRange(_db.LoanEmiSchedules);
+        _db.LoanApplications.RemoveRange(_db.LoanApplications);
+        _db.SavingsTransactions.RemoveRange(_db.SavingsTransactions);
+        _db.SavingsAccounts.RemoveRange(_db.SavingsAccounts);
+        _db.Customers.RemoveRange(_db.Customers);
+
+        // Reset portfolio balances in Chart of Accounts
+        var loanPortfolioAcc = await _db.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == "1030");
+        if (loanPortfolioAcc != null) loanPortfolioAcc.CurrentBalance = 0;
+
+        var savingsLiabAcc = await _db.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == "2010");
+        if (savingsLiabAcc != null) savingsLiabAcc.CurrentBalance = 0;
+
+        var interestIncomeAcc = await _db.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == "4010");
+        if (interestIncomeAcc != null) interestIncomeAcc.CurrentBalance = 0;
+
+        await _db.SaveChangesAsync();
+
+        return Ok(ApiResponse<bool>.Ok(true, "All dummy records cleared! Database is clean for real production entry."));
     }
 }

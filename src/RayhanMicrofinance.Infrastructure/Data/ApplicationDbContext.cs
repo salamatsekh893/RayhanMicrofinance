@@ -78,7 +78,11 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             property.SetColumnType("decimal(18,2)");
         }
 
-        // Configure Relationships to avoid multiple cascade paths in SQL Server
+        // Global DeleteBehavior.Restrict on all relationships to avoid multiple cascade paths in SQL Server
+        foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+        {
+            relationship.DeleteBehavior = DeleteBehavior.Restrict;
+        }
         modelBuilder.Entity<Customer>()
             .HasOne(c => c.Branch)
             .WithMany(b => b.Customers)

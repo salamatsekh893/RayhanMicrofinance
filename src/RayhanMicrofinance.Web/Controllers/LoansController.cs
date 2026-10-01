@@ -105,7 +105,7 @@ public class LoansController : ControllerBase
         [FromQuery] int pageIndex = 1,
         [FromQuery] int pageSize = 15)
     {
-        if (!_currentUser.IsSuperAdmin && _currentUser.BranchId.HasValue)
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue)
         {
             branchId = _currentUser.BranchId.Value;
         }
@@ -121,6 +121,12 @@ public class LoansController : ControllerBase
 
         if (status.HasValue) query = query.Where(l => l.Status == status.Value);
         if (branchId.HasValue) query = query.Where(l => l.BranchId == branchId.Value);
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue)
+        {
+            query = query.Where(l => l.Center != null && l.Center.FieldOfficerId == _currentUser.EmployeeId.Value);
+        }
+
         if (customerId.HasValue) query = query.Where(l => l.CustomerId == customerId.Value);
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -290,6 +296,20 @@ public class LoansController : ControllerBase
         var customer = await _db.Customers.FindAsync(req.CustomerId);
         if (customer == null) return BadRequest(ApiResponse<LoanApplicationDto>.Fail("Customer not found."));
 
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue && customer.BranchId != _currentUser.BranchId.Value)
+        {
+            return Forbid();
+        }
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue && customer.CenterId.HasValue)
+        {
+            var center = await _db.Centers.FindAsync(customer.CenterId.Value);
+            if (center != null && center.FieldOfficerId.HasValue && center.FieldOfficerId.Value != _currentUser.EmployeeId.Value)
+            {
+                return BadRequest(ApiResponse<LoanApplicationDto>.Fail("You can only apply for loans on behalf of members in your assigned centers."));
+            }
+        }
+
         var scheme = await _db.LoanSchemes.FindAsync(req.LoanSchemeId);
         if (scheme == null) return BadRequest(ApiResponse<LoanApplicationDto>.Fail("Loan scheme not found."));
 
@@ -337,8 +357,18 @@ public class LoansController : ControllerBase
     [HttpPost("{id}/approve")]
     public async Task<ActionResult<ApiResponse<bool>>> ApproveLoan(int id, [FromBody] ApproveLoanDto req)
     {
+        if (_currentUser.IsFieldOfficer)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ApiResponse<bool>.Fail("Field Officers cannot approve loans. Requires Branch Manager or Admin approval."));
+        }
+
         var loan = await _db.LoanApplications.FindAsync(id);
         if (loan == null) return NotFound(ApiResponse<bool>.Fail("Loan not found"));
+
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue && loan.BranchId != _currentUser.BranchId.Value)
+        {
+            return Forbid();
+        }
 
         if (loan.Status != LoanStatus.Applied && loan.Status != LoanStatus.UnderVerification)
         {
@@ -358,12 +388,22 @@ public class LoansController : ControllerBase
     [HttpPost("{id}/disburse")]
     public async Task<ActionResult<ApiResponse<bool>>> DisburseLoan(int id, [FromBody] DisburseLoanDto req)
     {
+        if (_currentUser.IsFieldOfficer)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, ApiResponse<bool>.Fail("Field Officers cannot disburse loans. Cashier or Branch Manager required."));
+        }
+
         var loan = await _db.LoanApplications
             .Include(l => l.Customer)
             .Include(l => l.LoanScheme)
             .FirstOrDefaultAsync(l => l.Id == id);
 
         if (loan == null) return NotFound(ApiResponse<bool>.Fail("Loan not found"));
+
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue && loan.BranchId != _currentUser.BranchId.Value)
+        {
+            return Forbid();
+        }
 
         if (loan.Status != LoanStatus.Approved)
         {

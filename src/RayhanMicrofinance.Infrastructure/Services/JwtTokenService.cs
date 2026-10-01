@@ -18,7 +18,7 @@ public class JwtTokenService : IJwtTokenService
         _configuration = configuration;
     }
 
-    public string GenerateAccessToken(int userId, string username, UserRole role, int? branchId)
+    public string GenerateAccessToken(int userId, string username, UserRole role, int? branchId, int? employeeId = null)
     {
         var secret = _configuration["Jwt:SecretKey"] ?? "RayhanMicrofinanceEnterpriseSecurityKey2026!#UltraSecure";
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
@@ -35,6 +35,11 @@ public class JwtTokenService : IJwtTokenService
         if (branchId.HasValue)
         {
             claims.Add(new Claim("BranchId", branchId.Value.ToString()));
+        }
+
+        if (employeeId.HasValue)
+        {
+            claims.Add(new Claim("EmployeeId", employeeId.Value.ToString()));
         }
 
         var expiryMinutes = Convert.ToInt32(_configuration["Jwt:ExpiryMinutes"] ?? "1440"); // default 24h

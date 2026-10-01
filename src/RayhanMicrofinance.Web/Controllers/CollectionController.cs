@@ -11,6 +11,7 @@ namespace RayhanMicrofinance.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Route("api/collections")]
 public class CollectionController : ControllerBase
 {
     private readonly ApplicationDbContext _db;
@@ -133,6 +134,7 @@ public class CollectionController : ControllerBase
             LoanApplicationId = loan.Id,
             CustomerId = loan.CustomerId,
             BranchId = loan.BranchId,
+            FieldOfficerId = _currentUser.EmployeeId,
             CollectionDate = req.CollectionDate != default ? req.CollectionDate : DateTime.UtcNow,
             TotalAmountPaid = req.Amount,
             PrincipalPortion = totalAllocatedPrincipal,
@@ -171,6 +173,19 @@ public class CollectionController : ControllerBase
         [FromQuery] int centerId,
         [FromQuery] DateTime? date)
     {
+        var center = await _db.Centers.FindAsync(centerId);
+        if (center == null) return NotFound(ApiResponse<List<CollectionSheetItemDto>>.Fail("Center not found."));
+
+        if (!_currentUser.IsAdminOrSuperAdmin && _currentUser.BranchId.HasValue && center.BranchId != _currentUser.BranchId.Value)
+        {
+            return Forbid();
+        }
+
+        if (_currentUser.IsFieldOfficer && _currentUser.EmployeeId.HasValue && center.FieldOfficerId.HasValue && center.FieldOfficerId.Value != _currentUser.EmployeeId.Value)
+        {
+            return Forbid();
+        }
+
         var targetDate = date ?? DateTime.UtcNow.Date;
 
         var loans = await _db.LoanApplications
