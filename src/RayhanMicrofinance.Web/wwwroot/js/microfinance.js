@@ -188,17 +188,20 @@ function applyRoleBasedUI() {
     }
 }
 
-// 3. BRANCH SELECTOR
+// 3. BRANCH SELECTOR & MULTI-BRANCH DIRECTORY
+let cachedBranches = [];
+
 async function loadBranches() {
     try {
         const res = await api('/api/branches');
         if (res && res.success) {
+            cachedBranches = res.data || [];
             const selector = document.getElementById('branchSelector');
             const isSuperAdminOrAdmin = currentUser && (currentUser.role === 1 || currentUser.role === 2);
 
             if (!isSuperAdminOrAdmin && currentUser && currentUser.branchId) {
                 selector.innerHTML = '';
-                res.data.forEach(b => {
+                cachedBranches.forEach(b => {
                     if (b.id === currentUser.branchId) {
                         const opt = document.createElement('option');
                         opt.value = b.id;
@@ -212,7 +215,7 @@ async function loadBranches() {
             } else {
                 selector.disabled = false;
                 selector.innerHTML = '<option value="">ALL BRANCHES (CONSOLIDATED)</option>';
-                res.data.forEach(b => {
+                cachedBranches.forEach(b => {
                     const opt = document.createElement('option');
                     opt.value = b.id;
                     opt.innerText = `${b.branchCode} - ${b.branchName.toUpperCase()}`;
@@ -221,29 +224,69 @@ async function loadBranches() {
                 if (selectedBranchId) selector.value = selectedBranchId;
             }
 
+            // Update Branches Count Badge
+            const countBadge = document.getElementById('branchesCountBadge');
+            if (countBadge) countBadge.innerText = `${cachedBranches.length} BRANCHES ACTIVE`;
+
             // Populate branch cards
             const container = document.getElementById('branchesCardsContainer');
             if (container) {
-                container.innerHTML = res.data.map(b => `
-                    <div class="bg-white rounded-3xl p-6 border-2 border-slate-200/90 shadow-md space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black px-3 py-1 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200">${b.branchCode}</span>
-                            <span class="text-xs font-black uppercase text-slate-400">${b.isHeadOffice ? 'HEAD OFFICE' : 'REGIONAL BRANCH'}</span>
+                container.innerHTML = cachedBranches.map(b => {
+                    const isHO = b.isHeadOffice;
+                    const borderCls = isHO ? 'border-emerald-400 bg-emerald-50/20' : 'border-blue-300 bg-white';
+                    const badgeCls = isHO ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-blue-50 text-blue-800 border-blue-200';
+                    const typeLabel = isHO ? 'CENTRAL HEAD OFFICE' : 'REGIONAL OPERATIONAL BRANCH';
+
+                    return `
+                    <div class="rounded-3xl p-6 border-2 ${borderCls} shadow-md space-y-4 hover:shadow-lg transition">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-mono font-black px-3 py-1 rounded-xl border ${badgeCls}">${b.branchCode}</span>
+                                <span class="text-[10px] font-black uppercase text-slate-500">${typeLabel}</span>
+                            </div>
+                            <button onclick="openEditBranchModal(${b.id})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black uppercase rounded-xl transition border border-slate-300 flex items-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square text-blue-600"></i> EDIT BRANCH
+                            </button>
                         </div>
-                        <h4 class="font-black text-slate-900 text-base uppercase">${b.branchName}</h4>
-                        <p class="text-xs font-bold text-slate-500 uppercase">${b.address}, ${b.city}, ${b.state} - ${b.pincode}</p>
-                        <div class="pt-4 border-t-2 border-slate-100 grid grid-cols-2 gap-3 text-xs">
-                            <div>
-                                <span class="text-slate-400 block text-[10px] uppercase font-black">VAULT CASH</span>
-                                <span class="font-black text-slate-900 text-sm font-mono">₹${Number(b.currentCashBalance).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+
+                        <div>
+                            <h4 class="font-black text-slate-900 text-base uppercase tracking-tight">${b.branchName}</h4>
+                            <p class="text-xs font-bold text-slate-500 uppercase mt-0.5">${b.address || ''}, ${b.city || ''}, ${b.state || ''} - ${b.pincode || ''}</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="flex items-center gap-1.5 text-slate-700 font-bold truncate">
+                                <i class="fa-solid fa-user-tie text-blue-600 text-xs"></i>
+                                <span class="text-slate-400 text-[10px] uppercase font-black">MGR:</span>
+                                <span class="text-slate-900 truncate">${b.managerName || 'NOT ASSIGNED'}</span>
                             </div>
-                            <div>
+                            <div class="flex items-center gap-1.5 text-slate-700 font-bold">
+                                <i class="fa-solid fa-phone text-emerald-600 text-xs"></i>
+                                <span class="text-slate-400 text-[10px] uppercase font-black">TEL:</span>
+                                <span class="text-slate-900">${b.phone || 'N/A'}</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t-2 border-slate-100 grid grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 bg-white rounded-2xl border border-slate-200">
+                                <span class="text-slate-400 block text-[10px] uppercase font-black">VAULT CASH IN-HAND</span>
+                                <span class="font-black text-slate-900 text-sm font-mono">₹${Number(b.currentCashBalance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                            </div>
+                            <div class="p-3 bg-white rounded-2xl border border-slate-200">
                                 <span class="text-slate-400 block text-[10px] uppercase font-black">BANK CURRENT BAL</span>
-                                <span class="font-black text-blue-700 text-sm font-mono">₹${Number(b.currentBankBalance).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+                                <span class="font-black text-blue-700 text-sm font-mono">₹${Number(b.currentBankBalance || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
                             </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">ZONE: ${b.areaName || b.city || 'CENTRAL'}</span>
+                            <button onclick="selectBranchFilter(${b.id})" class="text-blue-600 hover:text-blue-800 text-xs font-black uppercase flex items-center gap-1 transition cursor-pointer">
+                                <span>VIEW OPERATIONS</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
         }
     } catch (err) {
@@ -1813,6 +1856,32 @@ async function loadCompanyInfo() {
             const dashTitle = document.getElementById('dashboardCompanyTitle');
             if (dashTitle) dashTitle.innerText = displayName;
 
+            // Brand Logo Handling (In-Page and Topbar)
+            const inpageLogoImg = document.getElementById('inpageLogoImg');
+            const inpageLogoPlaceholder = document.getElementById('inpageLogoPlaceholder');
+            const topbarBrandLogoImg = document.getElementById('topbarBrandLogoImg');
+            const topbarBrandLogoIcon = document.getElementById('topbarBrandLogoIcon');
+
+            if (comp.logoUrl) {
+                if (inpageLogoImg) {
+                    inpageLogoImg.src = comp.logoUrl;
+                    inpageLogoImg.classList.remove('hidden');
+                }
+                if (inpageLogoPlaceholder) inpageLogoPlaceholder.classList.add('hidden');
+
+                if (topbarBrandLogoImg) {
+                    topbarBrandLogoImg.src = comp.logoUrl;
+                    topbarBrandLogoImg.classList.remove('hidden');
+                }
+                if (topbarBrandLogoIcon) topbarBrandLogoIcon.classList.add('hidden');
+            } else {
+                if (inpageLogoImg) inpageLogoImg.classList.add('hidden');
+                if (inpageLogoPlaceholder) inpageLogoPlaceholder.classList.remove('hidden');
+
+                if (topbarBrandLogoImg) topbarBrandLogoImg.classList.add('hidden');
+                if (topbarBrandLogoIcon) topbarBrandLogoIcon.classList.remove('hidden');
+            }
+
             // In-page Company Card elements (Branches tab)
             const setText = (id, val) => {
                 const el = document.getElementById(id);
@@ -1852,6 +1921,51 @@ async function loadCompanyInfo() {
     }
 }
 
+async function uploadCompanyLogo(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        Swal.fire('Invalid File', 'Please select a valid image file (PNG, JPG, SVG, WEBP).', 'warning');
+        return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+        Swal.fire('File Too Large', 'Maximum logo file size is 3 MB.', 'warning');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        try {
+            Swal.fire({
+                title: 'Uploading Logo...',
+                text: 'Saving company emblem to system...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const res = await api('/api/company/logo', 'POST', { base64Data });
+            if (res && res.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'LOGO UPDATED!',
+                    text: 'Company logo has been updated successfully across the entire system.',
+                    timer: 1800,
+                    showConfirmButton: false
+                });
+                await loadCompanyInfo();
+            } else {
+                Swal.fire('Error', res?.message || 'Failed to upload logo', 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Unable to upload logo to server.', 'error');
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
 function toggleInpageCompanyEdit() {
     const editCard = document.getElementById('inpageCompanyEditCard');
     const viewCard = document.getElementById('inpageCompanyViewCard');
@@ -1866,7 +1980,7 @@ function toggleInpageCompanyEdit() {
     } else {
         editCard.classList.add('hidden');
         if (viewCard) viewCard.classList.remove('hidden');
-        if (btnText) btnText.innerText = 'EDIT COMPANY PROFILE';
+        if (btnText) btnText.innerText = 'COMPANY PROFILE (1 ENTITY)';
     }
 }
 
@@ -1919,33 +2033,136 @@ async function saveInpageCompanyProfile() {
     }
 }
 
-async function openCompanyModal() {
+// 16. MULTI-BRANCH CREATION & MANAGEMENT
+function openNewBranchModal() {
+    const form = document.getElementById('formBranchModal');
+    if (form) form.reset();
+
+    const idInput = document.getElementById('bm_branchId');
+    if (idInput) idInput.value = '';
+
+    const nextCode = 'BR-' + String((cachedBranches ? cachedBranches.length : 0) + 1).padStart(3, '0');
+    const codeInput = document.getElementById('bm_branchCode');
+    if (codeInput) codeInput.value = nextCode;
+
+    const stateInput = document.getElementById('bm_state');
+    if (stateInput) stateInput.value = (currentCompanyData && currentCompanyData.state) ? currentCompanyData.state : 'West Bengal';
+
+    const title = document.getElementById('branchModalTitle');
+    if (title) title.innerText = 'OPEN NEW REGIONAL BRANCH';
+
+    const submitText = document.getElementById('bm_submitBtnText');
+    if (submitText) submitText.innerText = 'OPEN BRANCH';
+
+    const modal = document.getElementById('branchModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function openEditBranchModal(id) {
+    const b = (cachedBranches || []).find(x => x.id === id);
+    if (!b) return;
+
+    const setVal = (fieldId, val) => {
+        const el = document.getElementById(fieldId);
+        if (el) el.value = val !== null && val !== undefined ? val : '';
+    };
+
+    setVal('bm_branchId', b.id);
+    setVal('bm_branchCode', b.branchCode);
+    setVal('bm_branchName', b.branchName);
+    setVal('bm_managerName', b.managerName);
+    setVal('bm_phone', b.phone);
+    setVal('bm_email', b.email);
+    setVal('bm_address', b.address);
+    setVal('bm_city', b.city);
+    setVal('bm_state', b.state || 'West Bengal');
+    setVal('bm_pincode', b.pincode);
+    setVal('bm_areaName', b.areaName);
+    setVal('bm_cashBalance', Number(b.currentCashBalance || 0));
+    setVal('bm_bankBalance', Number(b.currentBankBalance || 0));
+
+    const title = document.getElementById('branchModalTitle');
+    if (title) title.innerText = `EDIT BRANCH: ${b.branchName.toUpperCase()}`;
+
+    const submitText = document.getElementById('bm_submitBtnText');
+    if (submitText) submitText.innerText = 'SAVE BRANCH CHANGES';
+
+    const modal = document.getElementById('branchModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeBranchModal() {
+    const modal = document.getElementById('branchModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function saveBranchModal() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    };
+
+    const branchId = getVal('bm_branchId');
+    const payload = {
+        branchCode: getVal('bm_branchCode'),
+        branchName: getVal('bm_branchName'),
+        managerName: getVal('bm_managerName'),
+        phone: getVal('bm_phone'),
+        email: getVal('bm_email'),
+        address: getVal('bm_address'),
+        city: getVal('bm_city'),
+        state: getVal('bm_state'),
+        pincode: getVal('bm_pincode'),
+        areaName: getVal('bm_areaName'),
+        currentCashBalance: parseFloat(getVal('bm_cashBalance')) || 0,
+        currentBankBalance: parseFloat(getVal('bm_bankBalance')) || 0
+    };
+
+    if (!payload.branchCode || !payload.branchName || !payload.city) {
+        Swal.fire('Required Fields', 'Please enter Branch Code, Branch Name, and City.', 'warning');
+        return;
+    }
+
     try {
-        const res = await api('/api/company');
-        if (res && res.success && res.data) {
-            const comp = res.data;
-            const setVal = (id, val) => {
-                const el = document.getElementById(id);
-                if (el) el.value = val || '';
-            };
-            setVal('compName', comp.name);
-            setVal('compCode', comp.code);
-            setVal('compRegNo', comp.registrationNumber);
-            setVal('compTaxNo', comp.taxNumber);
-            setVal('compPhone', comp.phone);
-            setVal('compEmail', comp.email);
-            setVal('compAddress', comp.address);
-            setVal('compCity', comp.city);
-            setVal('compState', comp.state);
-            setVal('compPincode', comp.pincode);
-            setVal('compCurrencySymbol', comp.currencySymbol || '₹');
-            setVal('compCurrencyCode', comp.currencyCode || 'INR');
+        let res;
+        if (branchId) {
+            res = await api(`/api/branches/${branchId}`, 'PUT', payload);
+        } else {
+            res = await api('/api/branches', 'POST', payload);
+        }
+
+        if (res && res.success) {
+            Swal.fire({
+                icon: 'success',
+                title: branchId ? 'BRANCH UPDATED!' : 'NEW BRANCH OPENED!',
+                text: res.message || 'Branch operations updated successfully.',
+                timer: 1800,
+                showConfirmButton: false
+            });
+            closeBranchModal();
+            await loadBranches();
+            if (activeTab === 'dashboard') loadDashboard();
+        } else {
+            Swal.fire('Error', res?.message || 'Failed to save branch', 'error');
         }
     } catch (err) {
-        console.error('Error opening company modal', err);
+        Swal.fire('Error', 'Unable to connect to server.', 'error');
     }
-    const modal = document.getElementById('companyModal');
-    if (modal) modal.classList.remove('hidden');
+}
+
+function selectBranchFilter(branchId) {
+    const sel = document.getElementById('branchSelector');
+    if (sel) {
+        sel.value = branchId;
+        onBranchChange();
+    }
+    switchTab('dashboard');
+}
+
+// 17. LEGACY MODAL COMPATIBILITY
+async function openCompanyModal() {
+    toggleInpageCompanyEdit();
+    switchTab('branches');
 }
 
 function closeCompanyModal() {
@@ -1954,50 +2171,5 @@ function closeCompanyModal() {
 }
 
 async function saveCompanyProfile() {
-    const getVal = (id) => {
-        const el = document.getElementById(id);
-        return el ? el.value.trim() : '';
-    };
-
-    const payload = {
-        name: getVal('compName'),
-        code: getVal('compCode'),
-        registrationNumber: getVal('compRegNo'),
-        taxNumber: getVal('compTaxNo'),
-        phone: getVal('compPhone'),
-        email: getVal('compEmail'),
-        address: getVal('compAddress'),
-        city: getVal('compCity'),
-        state: getVal('compState'),
-        pincode: getVal('compPincode'),
-        currencySymbol: getVal('compCurrencySymbol') || '₹',
-        currencyCode: getVal('compCurrencyCode') || 'INR',
-        country: 'India'
-    };
-
-    if (!payload.name || !payload.code) {
-        Swal.fire('Required Fields', 'Please enter Company Legal Name and Short Code.', 'warning');
-        return;
-    }
-
-    try {
-        const res = await api('/api/company', 'PUT', payload);
-        if (res && res.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'COMPANY PROFILE SAVED!',
-                text: 'Company profile updated successfully.',
-                timer: 2000,
-                showConfirmButton: false
-            });
-            closeCompanyModal();
-            await loadCompanyInfo();
-            await loadBranches();
-            if (activeTab === 'dashboard') loadDashboard();
-        } else {
-            Swal.fire('Error', res?.message || 'Failed to save company profile', 'error');
-        }
-    } catch (err) {
-        Swal.fire('Error', 'Unable to connect to server.', 'error');
-    }
+    await saveInpageCompanyProfile();
 }

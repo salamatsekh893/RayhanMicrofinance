@@ -30,8 +30,16 @@ public class BranchesController : ControllerBase
             query = query.Where(b => b.Id == _currentUser.BranchId.Value);
         }
 
-        var branches = await query.ToListAsync();
+        var branches = await query.OrderBy(b => b.Id).ToListAsync();
         return Ok(ApiResponse<List<Branch>>.Ok(branches));
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<Branch>>> GetBranchById(int id)
+    {
+        var branch = await _db.Branches.FirstOrDefaultAsync(b => b.Id == id);
+        if (branch == null) return NotFound(ApiResponse<Branch>.Fail("Branch not found"));
+        return Ok(ApiResponse<Branch>.Ok(branch));
     }
 
     [HttpPost]
@@ -46,10 +54,44 @@ public class BranchesController : ControllerBase
         if (company == null) return BadRequest(ApiResponse<Branch>.Fail("Company profile must exist"));
 
         req.CompanyId = company.Id;
+        req.BranchCode = string.IsNullOrWhiteSpace(req.BranchCode) ? $"BR-{(await _db.Branches.CountAsync() + 1):D3}" : req.BranchCode.Trim().ToUpper();
+        req.BranchName = req.BranchName?.Trim().ToUpper() ?? "NEW REGIONAL BRANCH";
+        req.City = req.City?.Trim() ?? string.Empty;
+        req.State = string.IsNullOrWhiteSpace(req.State) ? "West Bengal" : req.State.Trim();
+        req.IsHeadOffice = false;
+
         _db.Branches.Add(req);
         await _db.SaveChangesAsync();
 
-        return Ok(ApiResponse<Branch>.Ok(req, "Branch created successfully"));
+        return Ok(ApiResponse<Branch>.Ok(req, "New branch opened successfully"));
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<Branch>>> UpdateBranch(int id, [FromBody] Branch req)
+    {
+        if (!_currentUser.IsAdminOrSuperAdmin)
+        {
+            return Forbid();
+        }
+
+        var branch = await _db.Branches.FirstOrDefaultAsync(b => b.Id == id);
+        if (branch == null) return NotFound(ApiResponse<Branch>.Fail("Branch not found"));
+
+        branch.BranchName = string.IsNullOrWhiteSpace(req.BranchName) ? branch.BranchName : req.BranchName.Trim().ToUpper();
+        branch.BranchCode = string.IsNullOrWhiteSpace(req.BranchCode) ? branch.BranchCode : req.BranchCode.Trim().ToUpper();
+        branch.Address = req.Address ?? branch.Address;
+        branch.City = req.City ?? branch.City;
+        branch.State = req.State ?? branch.State;
+        branch.Pincode = req.Pincode ?? branch.Pincode;
+        branch.Phone = req.Phone ?? branch.Phone;
+        branch.Email = req.Email ?? branch.Email;
+        branch.ManagerName = req.ManagerName ?? branch.ManagerName;
+        branch.AreaName = req.AreaName ?? branch.AreaName;
+        branch.CurrentCashBalance = req.CurrentCashBalance;
+        branch.CurrentBankBalance = req.CurrentBankBalance;
+
+        await _db.SaveChangesAsync();
+        return Ok(ApiResponse<Branch>.Ok(branch, "Branch details updated successfully"));
     }
 }
 

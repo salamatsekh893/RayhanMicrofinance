@@ -92,4 +92,63 @@ public class CompanyController : ControllerBase
         await _db.SaveChangesAsync();
         return Ok(ApiResponse<Company>.Ok(company, "Company profile updated successfully!"));
     }
+
+    [HttpPost("logo")]
+    public async Task<ActionResult<ApiResponse<string>>> UploadLogo([FromBody] CompanyLogoRequest req)
+    {
+        if (!_currentUser.IsAdminOrSuperAdmin)
+        {
+            return Forbid();
+        }
+
+        if (string.IsNullOrWhiteSpace(req.Base64Data))
+        {
+            return BadRequest(ApiResponse<string>.Fail("No image data provided."));
+        }
+
+        var company = await _db.Companies.FirstOrDefaultAsync();
+        if (company == null)
+        {
+            company = new Company();
+            _db.Companies.Add(company);
+        }
+
+        try
+        {
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "company");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var ext = ".png";
+            var base64Clean = req.Base64Data;
+            if (req.Base64Data.Contains(","))
+            {
+                var parts = req.Base64Data.Split(',');
+                base64Clean = parts[1];
+                if (parts[0].Contains("jpeg") || parts[0].Contains("jpg")) ext = ".jpg";
+                else if (parts[0].Contains("webp")) ext = ".webp";
+                else if (parts[0].Contains("svg")) ext = ".svg";
+            }
+
+            var fileName = $"company_logo_{DateTime.UtcNow.Ticks}{ext}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+            var bytes = Convert.FromBase64String(base64Clean);
+            await System.IO.File.WriteAllBytesAsync(filePath, bytes);
+
+            company.LogoUrl = $"/uploads/company/{fileName}";
+            company.UpdatedAt = DateTime.UtcNow;
+            company.UpdatedBy = _currentUser.Username;
+            await _db.SaveChangesAsync();
+
+            return Ok(ApiResponse<string>.Ok(company.LogoUrl, "Company logo uploaded successfully!"));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ApiResponse<string>.Fail($"Failed to upload logo: {ex.Message}"));
+        }
+    }
+}
+
+public class CompanyLogoRequest
+{
+    public string Base64Data { get; set; } = string.Empty;
 }
