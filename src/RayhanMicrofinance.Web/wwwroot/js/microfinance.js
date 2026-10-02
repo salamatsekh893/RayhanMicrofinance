@@ -158,32 +158,30 @@ function applyRoleBasedUI() {
         cleanDbBtn.style.display = isSuperAdminOrAdmin ? 'inline-flex' : 'none';
     }
 
-    // Company Setup button in topbar
-    const companySetupBtn = document.getElementById('companySetupBtn');
-    if (companySetupBtn) {
-        companySetupBtn.style.display = isSuperAdminOrAdmin ? 'inline-flex' : 'none';
-    }
-
     // Sidebar navigation menus
+    const navCompany = document.getElementById('nav-company');
     const navAccounting = document.getElementById('nav-accounting');
     const navExpenses = document.getElementById('nav-expenses');
     const navBranches = document.getElementById('nav-branches');
     const navEmployees = document.getElementById('nav-employees');
 
     if (isFieldOfficer) {
+        if (navCompany) navCompany.style.display = 'none';
         if (navAccounting) navAccounting.style.display = 'none';
         if (navExpenses) navExpenses.style.display = 'none';
         if (navBranches) navBranches.style.display = 'none';
         if (navEmployees) navEmployees.style.display = 'none';
     } else if (isBranchManager) {
-        if (navBranches) navBranches.style.display = 'none'; // Branch manager cannot create new branches
+        if (navCompany) navCompany.style.display = 'none'; // Only HQ / Admin modifies legal entity profile
+        if (navBranches) navBranches.style.display = 'flex';
         if (navAccounting) navAccounting.style.display = 'flex';
         if (navExpenses) navExpenses.style.display = 'flex';
         if (navEmployees) navEmployees.style.display = 'flex';
     } else {
+        if (navCompany) navCompany.style.display = 'flex';
+        if (navBranches) navBranches.style.display = 'flex';
         if (navAccounting) navAccounting.style.display = 'flex';
         if (navExpenses) navExpenses.style.display = 'flex';
-        if (navBranches) navBranches.style.display = 'flex';
         if (navEmployees) navEmployees.style.display = 'flex';
     }
 }
@@ -371,7 +369,8 @@ function switchTab(tab) {
     else if (tab === 'accounting') loadAccounting();
     else if (tab === 'expenses') loadExpenses();
     else if (tab === 'employees') loadEmployees();
-    else if (tab === 'branches') { loadCompanyInfo(); loadBranches(); }
+    else if (tab === 'company') loadCompanyInfo();
+    else if (tab === 'branches') loadBranches();
 }
 
 // 5. DASHBOARD (IMAGE 1 DESIGN)
@@ -2161,8 +2160,7 @@ function selectBranchFilter(branchId) {
 
 // 17. LEGACY MODAL COMPATIBILITY
 async function openCompanyModal() {
-    toggleInpageCompanyEdit();
-    switchTab('branches');
+    switchTab('company');
 }
 
 function closeCompanyModal() {
