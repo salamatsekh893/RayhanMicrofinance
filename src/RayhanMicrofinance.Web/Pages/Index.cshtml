@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model IndexModel
 @{
     ViewData["Title"] = "RPS RAYHAN TECH - MICROFINANCE ERP";
@@ -283,7 +283,7 @@
                             <i class="fa-solid fa-hand-holding-dollar"></i>
                         </div>
                         <div class="leading-tight">
-                            <h1 class="font-black text-white text-sm sm:text-base tracking-tight uppercase">RPS RAYHAN TECH</h1>
+                            <h1 id="topbarCompanyName" class="font-black text-white text-sm sm:text-base tracking-tight uppercase">RPS RAYHAN TECH</h1>
                             <p class="text-[9px] font-black uppercase tracking-widest text-emerald-300">MICROFINANCE ERP</p>
                         </div>
                     </div>
@@ -322,6 +322,13 @@
                         </button>
                     </div>
 
+                                        <!-- Company Setup Button -->
+                    <button id="compSetupBtn" onclick="openCompanyModal()" title="Setup Company Profile"
+                            class="flex items-center gap-1.5 px-3 py-1.5 text-amber-100 text-[10px] font-black uppercase rounded-xl border border-amber-300/40 bg-amber-500/30 hover:bg-amber-500/50 transition cursor-pointer shadow-sm">
+                        <i class="fa-solid fa-building-flag text-xs text-amber-200"></i>
+                        <span class="hidden md:inline">COMPANY SETUP</span>
+                    </button>
+
                     <!-- Clean DB Button (Admin only) -->
                     <button id="cleanDbBtn" onclick="confirmClearDummyData()"
                             class="hidden sm:flex items-center gap-1 px-2.5 py-1.5 text-rose-100 text-[10px] font-black uppercase rounded-xl border border-rose-300/40 bg-rose-500/30 hover:bg-rose-500/50 transition cursor-pointer">
@@ -349,7 +356,12 @@
                                 <i class="fa-solid fa-landmark"></i>
                             </div>
                             <div>
-                                <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">SUBIDHA LOAN LTD / RPS RAYHAN TECH</h2>
+                                <div class="flex items-center gap-2">
+    <h2 id="dashboardCompanyTitle" class="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">SUBIDHA LOAN LTD / RPS RAYHAN TECH</h2>
+    <button onclick="openCompanyModal()" class="text-blue-600 hover:text-blue-800 text-xs font-bold underline cursor-pointer" title="Edit Company Details">
+        <i class="fa-solid fa-pen-to-square"></i> EDIT
+    </button>
+</div>
                                 <p class="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wide">ENTERPRISE MICROFINANCE CORE BANKING & FIELD COLLECTION SYSTEM</p>
                             </div>
                         </div>
@@ -1629,6 +1641,110 @@
         </div>
     </div>
 </div>
+
+    <!-- COMPANY SETUP MODAL -->
+    <div id="companyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 hidden">
+        <div class="bg-white rounded-3xl border-2 border-slate-200 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 text-lg">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-black text-slate-900 uppercase tracking-tight">COMPANY PROFILE & SETTINGS</h3>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase">Set your registered enterprise legal name, code, tax & address</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCompanyModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form id="formCompanyProfile" onsubmit="event.preventDefault(); saveCompanyProfile();" class="space-y-4 text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2">
+                        <label class="block font-black text-slate-700 uppercase mb-1">Company Legal Name *</label>
+                        <input type="text" id="compName" required placeholder="e.g. Subidha Microfinance Private Limited"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">Company Short Code *</label>
+                        <input type="text" id="compCode" required placeholder="e.g. SUB-MF"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs uppercase">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">Registration / CIN Number</label>
+                        <input type="text" id="compRegNo" placeholder="e.g. U65999WB2026PTC123456"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs uppercase">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">PAN / Tax / GST Number</label>
+                        <input type="text" id="compTaxNo" placeholder="e.g. 19AABCR1234F1Z5"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs uppercase">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">Official Contact Phone</label>
+                        <input type="tel" id="compPhone" placeholder="e.g. +91 98765 43210"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-black text-slate-700 uppercase mb-1">Official Email Address</label>
+                        <input type="email" id="compEmail" placeholder="e.g. contact@subidhamicrofinance.com"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-black text-slate-700 uppercase mb-1">Registered Head Office Address</label>
+                        <textarea id="compAddress" rows="2" placeholder="e.g. Holding No. 45, Station Road, Main Bazar"
+                                  class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">City / Town</label>
+                        <input type="text" id="compCity" placeholder="e.g. Kolkata"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">State / Province</label>
+                        <input type="text" id="compState" placeholder="e.g. West Bengal"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">Pincode / Postal Code</label>
+                        <input type="text" id="compPincode" placeholder="e.g. 700001"
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block font-black text-slate-700 uppercase mb-1">Currency Symbol & Code</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="compCurrencySymbol" value="₹" placeholder="₹"
+                                   class="w-16 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-black text-center text-slate-900 text-xs">
+                            <input type="text" id="compCurrencyCode" value="INR" placeholder="INR"
+                                   class="flex-1 px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 text-xs uppercase">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeCompanyModal()" class="px-5 py-2.5 rounded-xl font-black text-slate-600 bg-slate-100 hover:bg-slate-200 transition uppercase tracking-wider text-xs cursor-pointer">
+                        CANCEL
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl font-black text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-600/30 transition uppercase tracking-wider text-xs cursor-pointer flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>SAVE COMPANY PROFILE</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 @section Scripts {
     <script src="~/js/microfinance.js" asp-append-version="true"></script>

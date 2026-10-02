@@ -140,6 +140,7 @@ async function initApp() {
         applyRoleBasedUI();
     }
 
+    await loadCompanyInfo();
     await loadBranches();
     // Switch to dashboard tab — triggers correct sidebar-nav-item active styling and loadDashboard()
     switchTab('dashboard');
@@ -155,6 +156,12 @@ function applyRoleBasedUI() {
     const cleanDbBtn = document.getElementById('cleanDbBtn');
     if (cleanDbBtn) {
         cleanDbBtn.style.display = isSuperAdminOrAdmin ? 'inline-flex' : 'none';
+    }
+
+    // Company Setup button in topbar
+    const companySetupBtn = document.getElementById('companySetupBtn');
+    if (companySetupBtn) {
+        companySetupBtn.style.display = isSuperAdminOrAdmin ? 'inline-flex' : 'none';
     }
 
     // Sidebar navigation menus
@@ -1787,4 +1794,104 @@ function quickApplyForCustomer(cid, name) {
 function exportLoanPortfolioCsv() {
     window.location.href = '/api/loans?pageSize=1000';
     Swal.fire('EXPORTING', 'Preparing CSV portfolio report...', 'info');
+}
+
+// 15. COMPANY PROFILE & SETTINGS
+async function loadCompanyInfo() {
+    try {
+        const res = await api('/api/company');
+        if (res && res.success && res.data) {
+            const comp = res.data;
+            const displayName = (comp.name || 'RAYHAN MICROFINANCE').toUpperCase();
+            
+            const topbarName = document.getElementById('topbarCompanyName');
+            if (topbarName) topbarName.innerText = displayName;
+            
+            const dashTitle = document.getElementById('dashboardCompanyTitle');
+            if (dashTitle) dashTitle.innerText = displayName;
+        }
+    } catch (err) {
+        console.error('Error loading company info', err);
+    }
+}
+
+async function openCompanyModal() {
+    try {
+        const res = await api('/api/company');
+        if (res && res.success && res.data) {
+            const comp = res.data;
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            setVal('compName', comp.name);
+            setVal('compCode', comp.code);
+            setVal('compRegNo', comp.registrationNumber);
+            setVal('compTaxNo', comp.taxNumber);
+            setVal('compPhone', comp.phone);
+            setVal('compEmail', comp.email);
+            setVal('compAddress', comp.address);
+            setVal('compCity', comp.city);
+            setVal('compState', comp.state);
+            setVal('compPincode', comp.pincode);
+            setVal('compCurrencySymbol', comp.currencySymbol || '₹');
+            setVal('compCurrencyCode', comp.currencyCode || 'INR');
+        }
+    } catch (err) {
+        console.error('Error opening company modal', err);
+    }
+    const modal = document.getElementById('companyModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+function closeCompanyModal() {
+    const modal = document.getElementById('companyModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+async function saveCompanyProfile() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    };
+
+    const payload = {
+        name: getVal('compName'),
+        code: getVal('compCode'),
+        registrationNumber: getVal('compRegNo'),
+        taxNumber: getVal('compTaxNo'),
+        phone: getVal('compPhone'),
+        email: getVal('compEmail'),
+        address: getVal('compAddress'),
+        city: getVal('compCity'),
+        state: getVal('compState'),
+        pincode: getVal('compPincode'),
+        currencySymbol: getVal('compCurrencySymbol') || '₹',
+        currencyCode: getVal('compCurrencyCode') || 'INR',
+        country: 'India'
+    };
+
+    if (!payload.name || !payload.code) {
+        Swal.fire('Required Fields', 'Please enter Company Legal Name and Short Code.', 'warning');
+        return;
+    }
+
+    try {
+        const res = await api('/api/company', 'PUT', payload);
+        if (res && res.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'COMPANY PROFILE SAVED!',
+                text: 'Company profile updated successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            closeCompanyModal();
+            await loadCompanyInfo();
+        } else {
+            Swal.fire('Error', res?.message || 'Failed to save company profile', 'error');
+        }
+    } catch (err) {
+        Swal.fire('Error', 'Unable to connect to server.', 'error');
+    }
 }

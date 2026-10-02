@@ -233,26 +233,28 @@ public class DashboardController : ControllerBase
             return Forbid();
         }
 
-        // Remove sample operational transactions and customers
-        _db.LoanCollections.RemoveRange(_db.LoanCollections);
-        _db.LoanEmiSchedules.RemoveRange(_db.LoanEmiSchedules);
-        _db.LoanApplications.RemoveRange(_db.LoanApplications);
-        _db.SavingsTransactions.RemoveRange(_db.SavingsTransactions);
-        _db.SavingsAccounts.RemoveRange(_db.SavingsAccounts);
-        _db.Customers.RemoveRange(_db.Customers);
+        try
+        {
+            await _db.Database.ExecuteSqlRawAsync(@"
+                DELETE FROM LoanCollections;
+                DELETE FROM LoanEmiSchedules;
+                DELETE FROM LoanRescheduleHistories;
+                DELETE FROM LoanWriteOffHistories;
+                DELETE FROM LoanApplications;
+                DELETE FROM SavingsTransactions;
+                DELETE FROM SavingsAccounts;
+                UPDATE LoanGroups SET GroupLeaderId = NULL;
+                UPDATE Customers SET GroupId = NULL;
+                DELETE FROM Customers;
+                DELETE FROM LoanGroups;
+                UPDATE ChartOfAccounts SET CurrentBalance = 0 WHERE AccountCode IN ('1030', '2010', '4010');
+            ");
 
-        // Reset portfolio balances in Chart of Accounts
-        var loanPortfolioAcc = await _db.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == "1030");
-        if (loanPortfolioAcc != null) loanPortfolioAcc.CurrentBalance = 0;
-
-        var savingsLiabAcc = await _db.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == "2010");
-        if (savingsLiabAcc != null) savingsLiabAcc.CurrentBalance = 0;
-
-        var interestIncomeAcc = await _db.ChartOfAccounts.FirstOrDefaultAsync(a => a.AccountCode == "4010");
-        if (interestIncomeAcc != null) interestIncomeAcc.CurrentBalance = 0;
-
-        await _db.SaveChangesAsync();
-
-        return Ok(ApiResponse<bool>.Ok(true, "All dummy records cleared! Database is clean for real production entry."));
+            return Ok(ApiResponse<bool>.Ok(true, "All dummy records cleared! Database is clean for real production entry."));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ApiResponse<bool>.Fail($"Failed to clear data: {ex.Message}"));
+        }
     }
 }

@@ -1,0 +1,79 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RayhanMicrofinance.Application.Common;
+using RayhanMicrofinance.Application.Interfaces;
+using RayhanMicrofinance.Domain.Entities;
+using RayhanMicrofinance.Infrastructure.Data;
+
+namespace RayhanMicrofinance.Web.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CompanyController : ControllerBase
+{
+    private readonly ApplicationDbContext _db;
+    private readonly ICurrentUserService _currentUser;
+
+    public CompanyController(ApplicationDbContext db, ICurrentUserService currentUser)
+    {
+        _db = db;
+        _currentUser = currentUser;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<Company>>> GetCompany()
+    {
+        var company = await _db.Companies.Include(c => c.Branches).FirstOrDefaultAsync();
+        if (company == null)
+        {
+            company = new Company
+            {
+                Name = "My Microfinance Company",
+                Code = "MF-01",
+                Country = "India",
+                CurrencySymbol = "₹",
+                CurrencyCode = "INR"
+            };
+            _db.Companies.Add(company);
+            await _db.SaveChangesAsync();
+        }
+
+        return Ok(ApiResponse<Company>.Ok(company));
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<ApiResponse<Company>>> UpdateCompany([FromBody] Company model)
+    {
+        if (!_currentUser.IsAdminOrSuperAdmin)
+        {
+            return Forbid();
+        }
+
+        var company = await _db.Companies.FirstOrDefaultAsync();
+        if (company == null)
+        {
+            company = new Company();
+            _db.Companies.Add(company);
+        }
+
+        company.Name = string.IsNullOrWhiteSpace(model.Name) ? company.Name : model.Name.Trim();
+        company.Code = string.IsNullOrWhiteSpace(model.Code) ? company.Code : model.Code.Trim();
+        company.RegistrationNumber = model.RegistrationNumber ?? string.Empty;
+        company.TaxNumber = model.TaxNumber ?? string.Empty;
+        company.Address = model.Address ?? string.Empty;
+        company.City = model.City ?? string.Empty;
+        company.State = model.State ?? string.Empty;
+        company.Pincode = model.Pincode ?? string.Empty;
+        company.Country = string.IsNullOrWhiteSpace(model.Country) ? "India" : model.Country.Trim();
+        company.Phone = model.Phone ?? string.Empty;
+        company.Email = model.Email ?? string.Empty;
+        company.Website = model.Website ?? string.Empty;
+        company.CurrencySymbol = string.IsNullOrWhiteSpace(model.CurrencySymbol) ? "₹" : model.CurrencySymbol.Trim();
+        company.CurrencyCode = string.IsNullOrWhiteSpace(model.CurrencyCode) ? "INR" : model.CurrencyCode.Trim();
+        company.UpdatedAt = DateTime.UtcNow;
+        company.UpdatedBy = _currentUser.Username;
+
+        await _db.SaveChangesAsync();
+        return Ok(ApiResponse<Company>.Ok(company, "Company profile updated successfully!"));
+    }
+}
