@@ -328,7 +328,7 @@ function switchTab(tab) {
     else if (tab === 'accounting') loadAccounting();
     else if (tab === 'expenses') loadExpenses();
     else if (tab === 'employees') loadEmployees();
-    else if (tab === 'branches') loadBranches();
+    else if (tab === 'branches') { loadCompanyInfo(); loadBranches(); }
 }
 
 // 5. DASHBOARD (IMAGE 1 DESIGN)
@@ -1797,11 +1797,14 @@ function exportLoanPortfolioCsv() {
 }
 
 // 15. COMPANY PROFILE & SETTINGS
+let currentCompanyData = null;
+
 async function loadCompanyInfo() {
     try {
         const res = await api('/api/company');
         if (res && res.success && res.data) {
             const comp = res.data;
+            currentCompanyData = comp;
             const displayName = (comp.name || 'RAYHAN MICROFINANCE').toUpperCase();
             
             const topbarName = document.getElementById('topbarCompanyName');
@@ -1809,9 +1812,110 @@ async function loadCompanyInfo() {
             
             const dashTitle = document.getElementById('dashboardCompanyTitle');
             if (dashTitle) dashTitle.innerText = displayName;
+
+            // In-page Company Card elements (Branches tab)
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = val || '--';
+            };
+            setText('inpageCompName', displayName);
+            setText('inpageCompCode', (comp.code || 'MF-01').toUpperCase());
+            setText('inpageCompRegNo', comp.registrationNumber || '--');
+            setText('inpageCompTaxNo', comp.taxNumber || '--');
+            setText('inpageCompPhone', comp.phone || '--');
+            setText('inpageCompEmail', comp.email || '--');
+            
+            const fullAddr = [comp.address, comp.city, comp.state, comp.pincode ? `- ${comp.pincode}` : ''].filter(Boolean).join(', ');
+            setText('inpageCompAddress', fullAddr || '--');
+            setText('inpageCompCurrency', `${comp.currencySymbol || '₹'} (${comp.currencyCode || 'INR'})`);
+
+            // In-page Form Inputs
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+            setVal('inp_compName', comp.name);
+            setVal('inp_compCode', comp.code);
+            setVal('inp_compRegNo', comp.registrationNumber);
+            setVal('inp_compTaxNo', comp.taxNumber);
+            setVal('inp_compPhone', comp.phone);
+            setVal('inp_compEmail', comp.email);
+            setVal('inp_compAddress', comp.address);
+            setVal('inp_compCity', comp.city);
+            setVal('inp_compState', comp.state);
+            setVal('inp_compPincode', comp.pincode);
+            setVal('inp_compCurrencySymbol', comp.currencySymbol || '₹');
+            setVal('inp_compCurrencyCode', comp.currencyCode || 'INR');
         }
     } catch (err) {
         console.error('Error loading company info', err);
+    }
+}
+
+function toggleInpageCompanyEdit() {
+    const editCard = document.getElementById('inpageCompanyEditCard');
+    const viewCard = document.getElementById('inpageCompanyViewCard');
+    const btnText = document.getElementById('btnToggleCompanyText');
+    if (!editCard) return;
+
+    const isHidden = editCard.classList.contains('hidden');
+    if (isHidden) {
+        editCard.classList.remove('hidden');
+        if (viewCard) viewCard.classList.add('hidden');
+        if (btnText) btnText.innerText = 'CANCEL EDIT';
+    } else {
+        editCard.classList.add('hidden');
+        if (viewCard) viewCard.classList.remove('hidden');
+        if (btnText) btnText.innerText = 'EDIT COMPANY PROFILE';
+    }
+}
+
+async function saveInpageCompanyProfile() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+    };
+
+    const payload = {
+        name: getVal('inp_compName'),
+        code: getVal('inp_compCode'),
+        registrationNumber: getVal('inp_compRegNo'),
+        taxNumber: getVal('inp_compTaxNo'),
+        phone: getVal('inp_compPhone'),
+        email: getVal('inp_compEmail'),
+        address: getVal('inp_compAddress'),
+        city: getVal('inp_compCity'),
+        state: getVal('inp_compState'),
+        pincode: getVal('inp_compPincode'),
+        currencySymbol: getVal('inp_compCurrencySymbol') || '₹',
+        currencyCode: getVal('inp_compCurrencyCode') || 'INR',
+        country: 'India'
+    };
+
+    if (!payload.name || !payload.code) {
+        Swal.fire('Required Fields', 'Please enter Company Legal Name and Short Code.', 'warning');
+        return;
+    }
+
+    try {
+        const res = await api('/api/company', 'PUT', payload);
+        if (res && res.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'COMPANY & HEAD OFFICE UPDATED!',
+                text: 'Company details and Head Office branch have been synchronized.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            toggleInpageCompanyEdit();
+            await loadCompanyInfo();
+            await loadBranches();
+            if (activeTab === 'dashboard') loadDashboard();
+        } else {
+            Swal.fire('Error', res?.message || 'Failed to save company profile', 'error');
+        }
+    } catch (err) {
+        Swal.fire('Error', 'Unable to connect to server.', 'error');
     }
 }
 
@@ -1888,6 +1992,8 @@ async function saveCompanyProfile() {
             });
             closeCompanyModal();
             await loadCompanyInfo();
+            await loadBranches();
+            if (activeTab === 'dashboard') loadDashboard();
         } else {
             Swal.fire('Error', res?.message || 'Failed to save company profile', 'error');
         }

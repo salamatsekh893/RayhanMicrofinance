@@ -73,6 +73,22 @@ public class CompanyController : ControllerBase
         company.UpdatedAt = DateTime.UtcNow;
         company.UpdatedBy = _currentUser.Username;
 
+        // Automatically sync Head Office branch details
+        var headOffice = await _db.Branches.FirstOrDefaultAsync(b => b.IsHeadOffice);
+        if (headOffice != null)
+        {
+            if (!string.IsNullOrWhiteSpace(company.City))
+            {
+                headOffice.BranchName = $"{company.City.Trim().ToUpper()} HEAD OFFICE";
+                headOffice.City = company.City;
+            }
+            if (!string.IsNullOrWhiteSpace(company.Address)) headOffice.Address = company.Address;
+            if (!string.IsNullOrWhiteSpace(company.State)) headOffice.State = company.State;
+            if (!string.IsNullOrWhiteSpace(company.Pincode)) headOffice.Pincode = company.Pincode;
+            if (!string.IsNullOrWhiteSpace(company.Phone)) headOffice.Phone = company.Phone;
+            if (!string.IsNullOrWhiteSpace(company.Email)) headOffice.Email = company.Email;
+        }
+
         await _db.SaveChangesAsync();
         return Ok(ApiResponse<Company>.Ok(company, "Company profile updated successfully!"));
     }

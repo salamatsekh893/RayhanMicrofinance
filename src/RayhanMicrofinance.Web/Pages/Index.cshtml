@@ -1558,13 +1558,175 @@
 
                 <!-- VIEW 9: BRANCHES & COMPANY -->
                 <div id="view-branches" class="tab-view space-y-6 hidden">
-                    <div class="bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm">
-                        <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">MULTI-BRANCH ENTERPRISE NETWORK</h3>
-                        <p class="text-xs font-bold text-slate-400 uppercase">HEAD OFFICE, REGIONAL HUBS, CASH VAULTS, AND BRANCH DETAILS</p>
+                    <div class="bg-white p-5 rounded-3xl border-2 border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-300">ENTERPRISE CONFIG</span>
+                                <h3 class="text-base font-black text-slate-900 uppercase tracking-wider">COMPANY PROFILE & BRANCH NETWORK</h3>
+                            </div>
+                            <p class="text-xs font-bold text-slate-400 uppercase mt-0.5">REGISTERED ENTERPRISE LEGAL IDENTITY, HEADQUARTERS, AND PHYSICAL BRANCHES</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleInpageCompanyEdit()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black uppercase tracking-wider shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                <span id="btnToggleCompanyText">EDIT COMPANY PROFILE</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="branchesCardsContainer">
-                        <!-- Populated via JS -->
+                    <!-- 1. REGISTERED COMPANY PROFILE CARD (IN-PAGE VIEW) -->
+                    <div id="inpageCompanyViewCard" class="bg-gradient-to-br from-white to-slate-50/80 rounded-3xl p-6 border-2 border-emerald-500/40 shadow-md space-y-5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center text-white text-xl shadow-md flex-shrink-0">
+                                    <i class="fa-solid fa-building"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h2 id="inpageCompName" class="text-lg sm:text-xl font-black text-slate-900 uppercase tracking-tight">RPS RAYHAN TECH MICROFINANCE</h2>
+                                        <span id="inpageCompCode" class="px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 font-mono font-black text-[11px] border border-emerald-300 uppercase">731213</span>
+                                    </div>
+                                    <p class="text-xs font-bold text-slate-500 uppercase mt-0.5">REGISTERED MICROFINANCE ENTERPRISE</p>
+                                </div>
+                            </div>
+                            <button onclick="toggleInpageCompanyEdit()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-black uppercase tracking-wider transition border border-slate-300 flex items-center gap-1.5 self-start sm:self-auto cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square text-emerald-600"></i> EDIT DETAILS
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+                            <div class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+                                <span class="text-[10px] font-black uppercase text-slate-400 block mb-1">CIN / REGISTRATION NO</span>
+                                <span id="inpageCompRegNo" class="font-mono font-black text-slate-800 uppercase text-xs">--</span>
+                            </div>
+                            <div class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+                                <span class="text-[10px] font-black uppercase text-slate-400 block mb-1">PAN / TAX / GSTIN</span>
+                                <span id="inpageCompTaxNo" class="font-mono font-black text-slate-800 uppercase text-xs">--</span>
+                            </div>
+                            <div class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+                                <span class="text-[10px] font-black uppercase text-slate-400 block mb-1">OFFICIAL CONTACT PHONE</span>
+                                <span id="inpageCompPhone" class="font-mono font-black text-slate-800 text-xs">--</span>
+                            </div>
+                            <div class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+                                <span class="text-[10px] font-black uppercase text-slate-400 block mb-1">OFFICIAL EMAIL</span>
+                                <span id="inpageCompEmail" class="font-bold text-slate-800 text-xs truncate block">--</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-1">
+                            <div class="sm:col-span-2 p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+                                <span class="text-[10px] font-black uppercase text-slate-400 block mb-1">REGISTERED HEAD OFFICE ADDRESS</span>
+                                <span id="inpageCompAddress" class="font-bold text-slate-800 uppercase text-xs">--</span>
+                            </div>
+                            <div class="p-3.5 bg-white rounded-2xl border border-slate-200 shadow-2xs">
+                                <span class="text-[10px] font-black uppercase text-slate-400 block mb-1">CURRENCY CONFIG</span>
+                                <span id="inpageCompCurrency" class="font-mono font-black text-emerald-700 text-xs">â‚¹ (INR)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. IN-PAGE EDIT COMPANY FORM (TOGGLEABLE) -->
+                    <div id="inpageCompanyEditCard" class="bg-white rounded-3xl p-6 border-2 border-emerald-500 shadow-lg space-y-4 hidden">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-sm uppercase">UPDATE COMPANY PROFILE & HEAD OFFICE</h4>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase">Save changes to immediately update headers, reports, vouchers, and branch</p>
+                                </div>
+                            </div>
+                            <button onclick="toggleInpageCompanyEdit()" class="text-slate-400 hover:text-slate-600 p-1">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+
+                        <form id="formInpageCompany" onsubmit="event.preventDefault(); saveInpageCompanyProfile();" class="space-y-4 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Company Legal Name *</label>
+                                    <input type="text" id="inp_compName" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Company Short Code *</label>
+                                    <input type="text" id="inp_compCode" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs uppercase">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Registration / CIN</label>
+                                    <input type="text" id="inp_compRegNo" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs uppercase">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">PAN / Tax / GSTIN</label>
+                                    <input type="text" id="inp_compTaxNo" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs uppercase">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Official Contact Phone</label>
+                                    <input type="tel" id="inp_compPhone" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Official Email Address</label>
+                                    <input type="email" id="inp_compEmail" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                                <div class="sm:col-span-2">
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Registered Head Office Address</label>
+                                    <input type="text" id="inp_compAddress" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">City / Town</label>
+                                    <input type="text" id="inp_compCity" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">State</label>
+                                    <input type="text" id="inp_compState" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Pincode</label>
+                                    <input type="text" id="inp_compPincode" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 focus:bg-white focus:outline-emerald-500 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Currency Symbol</label>
+                                    <input type="text" id="inp_compCurrencySymbol" value="â‚¹" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-black text-center text-slate-900 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block font-black text-slate-700 uppercase mb-1">Currency Code</label>
+                                    <input type="text" id="inp_compCurrencyCode" value="INR" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 font-bold text-slate-900 text-xs uppercase">
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                                <button type="button" onclick="toggleInpageCompanyEdit()" class="px-5 py-2.5 rounded-xl font-black text-slate-600 bg-slate-100 hover:bg-slate-200 transition uppercase tracking-wider text-xs cursor-pointer">
+                                    CANCEL
+                                </button>
+                                <button type="submit" class="px-6 py-2.5 rounded-xl font-black text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/30 transition uppercase tracking-wider text-xs cursor-pointer flex items-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                    <span>SAVE COMPANY & UPDATE HEAD OFFICE</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 3. OPERATIONAL BRANCHES -->
+                    <div class="pt-2">
+                        <h4 class="text-xs font-black text-slate-900 uppercase tracking-wider flex items-center justify-between mb-3">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-code-branch text-blue-600"></i>
+                                <span>OPERATIONAL BRANCHES & CASH VAULTS</span>
+                            </span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">SYNCHRONIZED WITH CORE BANKING</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="branchesCardsContainer">
+                            <!-- Populated via JS -->
+                        </div>
                     </div>
                 </div>
 
